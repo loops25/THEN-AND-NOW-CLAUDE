@@ -490,18 +490,21 @@
   /* SEO Block */
   .seo-block {
     background: var(--dark3);
-    border: 1px solid #333;
+    border: 1px solid #2a2a2a;
     border-radius: 10px;
-    padding: 20px;
-    margin-bottom: 16px;
+    padding: 18px 20px;
+    margin-bottom: 12px;
+    transition: border-color 0.2s;
   }
+  .seo-block:hover { border-color: #444; }
 
   .seo-block-title {
     font-family: 'Bebas Neue', cursive;
-    font-size: 13px;
+    font-size: 11px;
     letter-spacing: 3px;
     color: var(--gold);
-    margin-bottom: 10px;
+    margin-bottom: 8px;
+    text-transform: uppercase;
   }
 
   .seo-block-text {
@@ -514,18 +517,18 @@
 
   .seo-section-divider {
     border: none;
-    border-top: 1px solid #2a2a2a;
-    margin: 22px 0;
+    border-top: 1px solid #1e1e1e;
+    margin: 24px 0;
   }
 
   .nostalgia-block {
-    background: rgba(212,175,55,0.05);
-    border: 1px solid rgba(212,175,55,0.15);
+    background: rgba(212,175,55,0.04);
+    border: 1px solid rgba(212,175,55,0.12);
     border-radius: 8px;
-    padding: 12px 14px;
-    margin-top: 10px;
+    padding: 14px 16px;
+    margin-top: 12px;
     font-size: 12px;
-    line-height: 1.7;
+    line-height: 1.8;
     color: #ccc;
   }
 
@@ -535,13 +538,14 @@
     text-transform: uppercase;
     color: var(--gold);
     font-weight: 600;
-    margin-bottom: 6px;
+    margin-bottom: 8px;
+    display: block;
   }
 
   .copy-seo-btn {
     margin-top: 10px;
     background: transparent;
-    border: 1px solid #444;
+    border: 1px solid #3a3a3a;
     color: var(--text-muted);
     border-radius: 6px;
     padding: 7px 16px;
@@ -552,8 +556,269 @@
     letter-spacing: 0.5px;
     transition: all 0.2s;
   }
-
   .copy-seo-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+  /* Person card accordion */
+  .person-accordion {
+    background: var(--dark2);
+    border: 1px solid #222;
+    border-radius: 12px;
+    margin-bottom: 12px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .person-accordion:hover { border-color: #333; }
+  .person-accordion.open { border-color: rgba(212,175,55,0.3); }
+
+  .person-accordion-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    cursor: pointer;
+    user-select: none;
+    gap: 12px;
+  }
+
+  .person-accordion-header:hover { background: rgba(255,255,255,0.02); }
+
+  .person-accordion-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .person-num {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(212,175,55,0.15);
+    color: var(--gold);
+    font-family: 'Bebas Neue', cursive;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .person-accordion-name {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 18px;
+    letter-spacing: 2px;
+    color: var(--text);
+  }
+
+  .person-accordion-meta {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  .person-accordion-arrow {
+    color: var(--text-muted);
+    font-size: 18px;
+    transition: transform 0.3s;
+    flex-shrink: 0;
+  }
+  .person-accordion.open .person-accordion-arrow { transform: rotate(180deg); color: var(--gold); }
+
+  .person-accordion-body {
+    display: none;
+    padding: 0 20px 20px;
+    border-top: 1px solid #1e1e1e;
+  }
+  .person-accordion.open .person-accordion-body { display: block; }
+
+  /* Background option cards */
+  .bg-option-card {
+    background: var(--dark);
+    border: 1px solid #222;
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 10px;
+    transition: border-color 0.2s;
+  }
+  .bg-option-card:hover { border-color: #333; }
+
+  .bg-option-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+
+  .bg-option-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(212,175,55,0.08);
+    border: 1px solid rgba(212,175,55,0.15);
+    border-radius: 20px;
+    padding: 4px 10px;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--gold);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .bg-option-label {
+    font-size: 12px;
+    color: var(--gold-light);
+    font-weight: 600;
+    margin-bottom: 8px;
+    padding: 6px 10px;
+    background: rgba(212,175,55,0.06);
+    border-radius: 6px;
+    border-left: 2px solid var(--gold);
+  }
+
+  .bg-option-prompt {
+    font-size: 11px;
+    line-height: 1.6;
+    color: #999;
+    white-space: pre-wrap;
+    word-break: break-word;
+    max-height: 120px;
+    overflow: hidden;
+    transition: max-height 0.3s;
+    cursor: pointer;
+  }
+  .bg-option-prompt.expanded { max-height: 2000px; }
+
+  .bg-expand-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 11px;
+    cursor: pointer;
+    padding: 4px 0;
+    font-family: 'DM Sans', sans-serif;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 4px;
+    transition: color 0.2s;
+  }
+  .bg-expand-btn:hover { color: var(--gold); }
+
+  /* Series SEO top block */
+  .series-seo-wrapper {
+    background: var(--dark2);
+    border: 1px solid rgba(212,175,55,0.2);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 20px;
+  }
+
+  .series-seo-title {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 13px;
+    letter-spacing: 3px;
+    color: var(--gold);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .titles-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .title-option {
+    background: var(--dark);
+    border: 1px solid #222;
+    border-radius: 8px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    transition: border-color 0.2s;
+  }
+  .title-option:hover { border-color: rgba(212,175,55,0.3); }
+
+  .title-option-num {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 20px;
+    color: rgba(212,175,55,0.3);
+    flex-shrink: 0;
+    line-height: 1;
+    margin-top: 2px;
+  }
+
+  .title-option-text {
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--text);
+    flex: 1;
+  }
+
+  .copy-title-btn {
+    background: transparent;
+    border: 1px solid #333;
+    color: var(--text-muted);
+    border-radius: 6px;
+    padding: 5px 12px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    white-space: nowrap;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+  .copy-title-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+  /* Collapsible desc/tags */
+  .meta-toggle {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 12px;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 0;
+    transition: color 0.2s;
+    font-weight: 500;
+  }
+  .meta-toggle:hover { color: var(--gold); }
+
+  .meta-collapsible { display: none; }
+  .meta-collapsible.open { display: block; }
+
+  /* Section label */
+  .section-label {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 13px;
+    letter-spacing: 3px;
+    color: var(--gold);
+    margin: 20px 0 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* Loading */
+  @keyframes pulse { 0%,100%{opacity:0.3;transform:scale(0.8)} 50%{opacity:1;transform:scale(1.2)} }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .loading-spinner {
+    width: 36px; height: 36px;
+    border: 3px solid #2a2a2a;
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 16px;
+  }
 </style>
 </head>
 <body>
@@ -1085,58 +1350,58 @@ async function generateAutoSeries() {
 
   const cards = document.getElementById('multiOutputCards');
   cards.innerHTML = `
-    <div style="text-align:center;padding:40px 20px;">
-      <div style="font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:3px;color:var(--gold);margin-bottom:12px;">
-        ⚡ AI IS BUILDING YOUR SERIES...
+    <div style="text-align:center;padding:50px 20px;">
+      <div class="loading-spinner"></div>
+      <div style="font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:3px;color:var(--gold);margin-bottom:10px;">
+        IA CREANDO TU SERIE...
       </div>
-      <div style="color:var(--text-muted);font-size:13px;">Groq is selecting the perfect 5 characters for maximum nostalgia and compatibility</div>
-      <div style="margin-top:20px;display:flex;justify-content:center;gap:6px;">
-        <span style="width:8px;height:8px;background:var(--gold);border-radius:50%;display:inline-block;animation:pulse 1s infinite 0s"></span>
-        <span style="width:8px;height:8px;background:var(--gold);border-radius:50%;display:inline-block;animation:pulse 1s infinite 0.2s"></span>
-        <span style="width:8px;height:8px;background:var(--gold);border-radius:50%;display:inline-block;animation:pulse 1s infinite 0.4s"></span>
+      <div style="color:var(--text-muted);font-size:13px;max-width:300px;margin:0 auto;line-height:1.6;">
+        Groq está eligiendo los 5 personajes perfectos y generando fondos únicos para máxima nostalgia
       </div>
     </div>
-    <style>@keyframes pulse{0%,100%{opacity:0.3;transform:scale(0.8)}50%{opacity:1;transform:scale(1.2)}}</style>
   `;
   document.getElementById('multiOutputBox').classList.add('visible');
   setTimeout(() => document.getElementById('multiOutputBox').scrollIntoView({behavior:'smooth', block:'nearest'}), 100);
 
   const categoryLabel = CATEGORY_LABELS[cat] || cat;
 
-  const systemPrompt = `You are an expert YouTube Shorts content strategist specializing in "Then vs Now" viral videos. You know exactly which combinations of celebrities create maximum nostalgia, emotional impact, and viewer engagement.
+  const systemPrompt = `You are an elite YouTube Shorts content strategist with deep knowledge of viral "Then vs Now" content. You specialize in creating emotionally devastating titles that make viewers STOP scrolling.
 
-You must respond ONLY with a valid JSON object. No markdown, no explanation, no extra text.`;
+You understand the 5 principles of an unstoppable YouTube title:
+1. ACTIVATE A CONCRETE EMOTION — loss, threat, betrayal, nostalgia, shock. Never neutral descriptions.
+2. UNDERSTOOD IN UNDER 1 SECOND — clear subject, clear problem, no ambiguity
+3. CONNECT WITH AN EXISTING TENSION — the viewer already feels this pain or nostalgia. You are naming it.
+4. TITLE + THUMBNAIL AS A SYSTEM — title plants the question, thumbnail suggests the answer
+5. LEAVE ONE PIECE STRATEGICALLY UNRESOLVED — the brain MUST click to close the loop
+
+BAD titles (never generate these): "Action Stars Then vs Now", "What Happened to These Legends?", "The Heroes Who Disappeared"
+GOOD titles (this is the required standard): "They Trained Like Gods and Ruled the World — Then Nobody Warned Them It Would End Like This 😱", "You Grew Up Believing These Men Were Invincible — What Time Did to Them Will Break You 💔", "Your Childhood Heroes Were Unstoppable on Screen — Nobody Told You What Was Happening Behind It 😢"
+
+You must respond ONLY with a valid JSON object. No markdown, no explanation, no extra text whatsoever.`;
 
   const userPrompt = `Create a perfectly compatible "Then vs Now" series of exactly 5 ${categoryLabel} for a YouTube Shorts video.
 
-Rules for selecting the 5 people:
-- They must be from a similar era so viewers recognize all of them
-- Together they must trigger MAXIMUM nostalgia and emotional impact
-- Each person must be globally iconic and instantly recognizable
-- The combination must feel like "the dream team" that defined an era
+SELECTION RULES:
+- Same era — viewers must recognize ALL 5 instantly
+- Together they trigger MAXIMUM nostalgia and emotional impact
+- The combination feels like THE dream team that defined a generation
+- Globally iconic, not regional
 
-For each person provide:
+For EACH person provide:
 - name: full name
-- role: short description (e.g. "American Actor", "Brazilian Footballer")
-- peak: their peak year (e.g. "Peak — 1990")
-- lines: array of exactly 3 short nostalgic lines in American English (max 5 words each), like: ["Mr. Olympia champion", "bodybuilder turned", "Hollywood megastar"]
-- backgrounds: array of exactly 3 DIFFERENT iconic locations. Each must be visually SPECTACULAR, cinematic and instantly recognizable to fans. Format each as: "The [specific location name] [interior/exterior] from [movie/show/event name]". Choose locations that are visually dramatic and different from each other — avoid generic or boring locations.
-- pose: one of these exact values: "sitting comfortably, smiling at the camera" | "standing confidently, arms crossed, smiling" | "leaning casually against a wall, smiling" | "crouching dynamically, looking at camera" | "walking towards the camera, mid-stride, smiling"
-- title1, title2, title3: 3 YouTube titles SPECIFIC to THIS person that follow ALL 5 principles:
-  1. Activates a concrete emotion (loss, threat, nostalgia, surprise) tied to THIS person's story
-  2. Understood in under 1 second — direct subject, clear problem
-  3. Connects with a tension that ALREADY EXISTS in the viewer's mind about THIS person
-  4. Does NOT explain everything — works as a system with the thumbnail
-  5. Leaves ONE strategic piece unresolved — forces the click
-  Examples of the RIGHT tone: "He Trained Like a God, Ruled Hollywood for Decades — Then This Happened 😱" or "You Grew Up Idolizing Him — Nobody Told You What It Actually Cost Him 💔"
-  NOT generic descriptions like "Arnold Schwarzenegger Then vs Now"
+- role: short nationality + profession (e.g. "American Actor", "Brazilian Footballer")
+- peak: peak year as "Peak — YEAR"
+- lines: exactly 3 ultra-short nostalgic lines in American English (max 5 words each). Must trigger nostalgia and admiration. Example: ["Mr. Olympia champion", "bodybuilder turned", "Hollywood megastar"]
+- backgrounds: exactly 3 DIFFERENT iconic locations that are visually SPECTACULAR and cinematic. Format: "The [specific location name] [interior/exterior] from [exact title]". Make them dramatic and visually distinct from each other.
+- backgroundLabels: exactly 3 descriptions IN SPANISH (2-3 sentences each) explaining what each background looks like visually so the user can decide which to use. Be specific, evocative and visual. Example: "La oscura y húmeda jungla de Predator, con árboles gigantes, niebla densa y luz filtrada entre las copas. Un fondo cinematográfico y lleno de tensión."
+- pose: one of: "sitting comfortably, smiling at the camera" | "standing confidently, arms crossed, smiling" | "leaning casually against a wall, smiling" | "crouching dynamically, looking at camera" | "walking towards the camera, mid-stride, smiling"
 
-Also provide for the WHOLE SERIES:
-- seo.title1, seo.title2, seo.title3: 3 series-level titles with same 5 principles but for the GROUP
-- seo.description: one YouTube Shorts description with hashtags
-- seo.tags: array of 15 relevant SEO tags
+For the WHOLE SERIES in "seo":
+- title1, title2, title3: 3 completely different series-level YouTube titles. CRITICAL: These must be emotionally devastating, not descriptive. Each must use a different emotional angle (loss, betrayal of expectations, nostalgia as pain). The viewer must feel "this is about MY childhood, something I lost." Apply all 5 principles at maximum intensity. NO generic phrases.
+- description: emotionally charged YouTube Shorts description in English with hashtags
+- tags: array of 15 SEO tags
 
-Respond with this EXACT JSON structure, no extra text:
+Respond with ONLY this exact JSON structure:
 {
   "persons": [
     {
@@ -1145,10 +1410,8 @@ Respond with this EXACT JSON structure, no extra text:
       "peak": "",
       "lines": ["", "", ""],
       "backgrounds": ["", "", ""],
-      "pose": "",
-      "title1": "",
-      "title2": "",
-      "title3": ""
+      "backgroundLabels": ["", "", ""],
+      "pose": ""
     }
   ],
   "seo": {
@@ -1236,45 +1499,53 @@ function renderAISeries(result, cat) {
 
   const seoCard = document.createElement('div');
   seoCard.innerHTML = `
-    <div style="font-family:'Bebas Neue',cursive;font-size:14px;letter-spacing:3px;color:#D4AF37;margin-bottom:14px;">
-      🤖 AI-GENERATED SERIES · 🌐 SEO METADATA
+    <div class="series-seo-wrapper">
+      <div class="series-seo-title">🤖 AI · 🌐 SEO DE LA SERIE</div>
+
+      <div class="titles-grid">
+        <div class="title-option">
+          <div class="title-option-num">01</div>
+          <div class="title-option-text" id="seoTitle1">${seo.title1}</div>
+          <button class="copy-title-btn" onclick="copySeoField('seoTitle1', this)">📋 Copiar</button>
+        </div>
+        <div class="title-option">
+          <div class="title-option-num">02</div>
+          <div class="title-option-text" id="seoTitle2">${seo.title2}</div>
+          <button class="copy-title-btn" onclick="copySeoField('seoTitle2', this)">📋 Copiar</button>
+        </div>
+        <div class="title-option">
+          <div class="title-option-num">03</div>
+          <div class="title-option-text" id="seoTitle3">${seo.title3}</div>
+          <button class="copy-title-btn" onclick="copySeoField('seoTitle3', this)">📋 Copiar</button>
+        </div>
+      </div>
+
+      <button class="meta-toggle" onclick="toggleMeta('metaDesc', this)">
+        ▼ Ver descripción y tags
+      </button>
+      <div class="meta-collapsible" id="metaDesc">
+        <div class="seo-block" style="margin-top:10px;">
+          <div class="seo-block-title">📝 Descripción (Shorts)</div>
+          <div class="seo-block-text" id="seoDescText">${seo.description}</div>
+          <button class="copy-seo-btn" onclick="copySeoField('seoDescText', this)">📋 Copiar Descripción</button>
+        </div>
+        <div class="seo-block">
+          <div class="seo-block-title">🏷️ Tags / Keywords</div>
+          <div class="seo-block-text" id="seoTagsText">${seo.tags.join(', ')}</div>
+          <button class="copy-seo-btn" onclick="copySeoField('seoTagsText', this)">📋 Copiar Tags</button>
+        </div>
+      </div>
     </div>
-    <div class="seo-block">
-      <div class="seo-block-title">📌 TITLE OPTION 1 — Pick the one that hits hardest</div>
-      <div class="seo-block-text" id="seoTitle1">${seo.title1}</div>
-      <button class="copy-seo-btn" onclick="copySeoField('seoTitle1', this)">📋 Copy Title 1</button>
-    </div>
-    <div class="seo-block">
-      <div class="seo-block-title">📌 TITLE OPTION 2</div>
-      <div class="seo-block-text" id="seoTitle2">${seo.title2}</div>
-      <button class="copy-seo-btn" onclick="copySeoField('seoTitle2', this)">📋 Copy Title 2</button>
-    </div>
-    <div class="seo-block">
-      <div class="seo-block-title">📌 TITLE OPTION 3</div>
-      <div class="seo-block-text" id="seoTitle3">${seo.title3}</div>
-      <button class="copy-seo-btn" onclick="copySeoField('seoTitle3', this)">📋 Copy Title 3</button>
-    </div>
-    <div class="seo-block">
-      <div class="seo-block-title">📝 DESCRIPTION (SHORTS)</div>
-      <div class="seo-block-text" id="seoDescText">${seo.description}</div>
-      <button class="copy-seo-btn" onclick="copySeoField('seoDescText', this)">📋 Copy Description</button>
-    </div>
-    <div class="seo-block">
-      <div class="seo-block-title">🏷️ TAGS / KEYWORDS</div>
-      <div class="seo-block-text" id="seoTagsText">${seo.tags.join(', ')}</div>
-      <button class="copy-seo-btn" onclick="copySeoField('seoTagsText', this)">📋 Copy Tags</button>
-    </div>
-    <hr class="seo-section-divider">
-    <div style="font-family:'Bebas Neue',cursive;font-size:14px;letter-spacing:3px;color:#D4AF37;margin-bottom:14px;">
-      🎬 IMAGE PROMPTS + VIDEO OVERLAY DATA
-    </div>
+
+    <div class="section-label">🎬 PERSONAJES DE LA SERIE</div>
   `;
   cards.appendChild(seoCard);
 
   persons.forEach((person, i) => {
-    // Build 3 prompts for 3 backgrounds
-    const backgrounds = person.backgrounds || [person.background || ''];
-    const prompts = backgrounds.map((bg, bi) => `Name: ${person.name.toUpperCase()}
+    const backgrounds = person.backgrounds || [];
+    const labels = person.backgroundLabels || [];
+
+    const prompts = backgrounds.map(bg => `Name: ${person.name.toUpperCase()}
 Pose: [${person.pose}]
 How many?: 5
 Where?: ${bg}. ${TECH_SPEC}
@@ -1282,58 +1553,52 @@ Composition: A tightly framed candid group photo. The central person sits in the
 Around them are the remaining 4 figures — all strictly iconic characters/versions of ${person.name} — arranged closely in a friendly cluster: kneeling, crouching, or leaning in, with physical contact (e.g., hand on shoulder, arm around back). There are no empty spaces on the left or right edges; the group fills the frame width completely. All figures — including the central person and every surrounding role — have identical head and cranial volume (1:1 scale), and all faces smile warmly at the camera. A small margin (≈10–15% of frame height) is left above the central person's head; no hair or forehead is cropped.
 ${TECH_SPEC}`);
 
-    allPrompts += `--- PERSON ${i+1}: ${person.name.toUpperCase()} ---\n`;
-    prompts.forEach((p, bi) => { allPrompts += `BACKGROUND OPTION ${bi+1}:\n${p}\n\n`; });
-    allPrompts += `INDIVIDUAL TITLES:\n1. ${person.title1}\n2. ${person.title2}\n3. ${person.title3}\n`;
-    allPrompts += `VIDEO OVERLAY:\nNAME: ${person.name.toUpperCase()}\nROLE: ${person.role}\n${person.peak}\nLINE 1: ${person.lines[0]}\nLINE 2: ${person.lines[1]}\nLINE 3: ${person.lines[2]}\n\n`;
+    allPrompts += `--- ${person.name.toUpperCase()} ---\n`;
+    prompts.forEach((p, bi) => { allPrompts += `BG OPTION ${bi+1}:\n${p}\n\n`; });
+    allPrompts += `VIDEO OVERLAY:\n${person.name.toUpperCase()} · ${person.role} · ${person.peak}\n${person.lines.join(' · ')}\n\n`;
 
-    // Build background prompt cards HTML
-    const bgCards = backgrounds.map((bg, bi) => `
-      <div style="background:var(--dark2);border:1px solid #2a2a2a;border-radius:8px;padding:14px;margin-bottom:10px;">
-        <div style="font-size:10px;letter-spacing:2px;color:var(--gold);font-weight:600;margin-bottom:8px;text-transform:uppercase;">
-          🎬 Background Option ${bi+1}
+    // Build background option cards
+    const bgHTML = backgrounds.map((bg, bi) => `
+      <div class="bg-option-card">
+        <div class="bg-option-header">
+          <span class="bg-option-badge">🎬 Opción ${bi + 1}</span>
+          <button class="copy-title-btn" onclick="copyBgPrompt(this)" data-prompt="${encodeURIComponent(prompts[bi])}">📋 Copiar Prompt</button>
         </div>
-        <div class="prompt-card-text" style="font-size:11px;" data-prompt="${encodeURIComponent(prompts[bi])}">${prompts[bi]}</div>
-        <button class="copy-single-btn" style="margin-top:8px" onclick="copySingleFromParent(this)">📋 Copy Prompt ${bi+1}</button>
+        <div class="bg-option-label">📍 ${labels[bi] || bg}</div>
+        <div class="bg-option-prompt" id="bgprompt_${i}_${bi}">${prompts[bi]}</div>
+        <button class="bg-expand-btn" onclick="toggleBgPrompt('bgprompt_${i}_${bi}', this)">
+          <span>▼</span> Ver prompt completo
+        </button>
       </div>
     `).join('');
 
-    const card = document.createElement('div');
-    card.className = 'prompt-card';
-    card.innerHTML = `
-      <div class="prompt-card-header">
-        <div class="prompt-card-name">${i+1}. ${person.name.toUpperCase()}</div>
+    const accordion = document.createElement('div');
+    accordion.className = 'person-accordion';
+    accordion.innerHTML = `
+      <div class="person-accordion-header" onclick="toggleAccordion(this)">
+        <div class="person-accordion-left">
+          <div class="person-num">${i + 1}</div>
+          <div>
+            <div class="person-accordion-name">${person.name.toUpperCase()}</div>
+            <div class="person-accordion-meta">${person.role} · ${person.peak}</div>
+          </div>
+        </div>
+        <div class="person-accordion-arrow">▾</div>
       </div>
-
-      <div style="margin-bottom:14px;">
-        <div style="font-size:10px;letter-spacing:2px;color:var(--gold);font-weight:600;margin-bottom:10px;text-transform:uppercase;">
-          📌 Individual Titles — Pick the one that hits hardest
+      <div class="person-accordion-body">
+        <div style="padding-top:16px;">
+          ${bgHTML}
+          <div class="nostalgia-block" style="margin-top:14px;">
+            <span class="nostalgia-label">🎬 Video Overlay Text</span>
+            <strong style="color:var(--text)">${person.name.toUpperCase()}</strong><br>
+            <span style="color:var(--text-muted)">${person.role}</span><br>
+            <span style="color:var(--gold)">${person.peak}</span><br>
+            <span style="color:#ccc">${person.lines.join('<br>')}</span>
+          </div>
         </div>
-        <div style="background:var(--dark2);border:1px solid #2a2a2a;border-radius:8px;padding:12px;margin-bottom:8px;">
-          <div style="font-size:12px;color:var(--text);margin-bottom:6px;" id="pt${i}_1">${person.title1}</div>
-          <button class="copy-seo-btn" onclick="copySeoField('pt${i}_1', this)">📋 Copy Title 1</button>
-        </div>
-        <div style="background:var(--dark2);border:1px solid #2a2a2a;border-radius:8px;padding:12px;margin-bottom:8px;">
-          <div style="font-size:12px;color:var(--text);margin-bottom:6px;" id="pt${i}_2">${person.title2}</div>
-          <button class="copy-seo-btn" onclick="copySeoField('pt${i}_2', this)">📋 Copy Title 2</button>
-        </div>
-        <div style="background:var(--dark2);border:1px solid #2a2a2a;border-radius:8px;padding:12px;margin-bottom:8px;">
-          <div style="font-size:12px;color:var(--text);margin-bottom:6px;" id="pt${i}_3">${person.title3}</div>
-          <button class="copy-seo-btn" onclick="copySeoField('pt${i}_3', this)">📋 Copy Title 3</button>
-        </div>
-      </div>
-
-      ${bgCards}
-
-      <div class="nostalgia-block">
-        <div class="nostalgia-label">🎬 Video Overlay Text</div>
-        <strong>${person.name.toUpperCase()}</strong><br>
-        ${person.role}<br>
-        <span style="color:var(--gold)">${person.peak}</span><br>
-        ${person.lines.join('<br>')}
       </div>
     `;
-    cards.appendChild(card);
+    cards.appendChild(accordion);
   });
 
   document.getElementById('multiOutputBox').dataset.all = encodeURIComponent(allPrompts);
@@ -1469,11 +1734,41 @@ ${TECH_SPEC}`;
   setTimeout(() => document.getElementById('multiOutputBox').scrollIntoView({behavior:'smooth', block:'nearest'}), 100);
 }
 
+function toggleAccordion(header) {
+  const accordion = header.parentElement;
+  accordion.classList.toggle('open');
+}
+
+function toggleBgPrompt(id, btn) {
+  const el = document.getElementById(id);
+  el.classList.toggle('expanded');
+  if (el.classList.contains('expanded')) {
+    btn.innerHTML = '<span>▲</span> Ocultar prompt';
+  } else {
+    btn.innerHTML = '<span>▼</span> Ver prompt completo';
+  }
+}
+
+function toggleMeta(id, btn) {
+  const el = document.getElementById(id);
+  el.classList.toggle('open');
+  btn.textContent = el.classList.contains('open') ? '▲ Ocultar descripción y tags' : '▼ Ver descripción y tags';
+}
+
+function copyBgPrompt(btn) {
+  const text = decodeURIComponent(btn.dataset.prompt);
+  navigator.clipboard.writeText(text).then(() => {
+    const orig = btn.textContent;
+    btn.textContent = '✅ Copiado!';
+    setTimeout(() => btn.textContent = orig, 2000);
+  });
+}
+
 function copySingleFromParent(btn) {
   const text = decodeURIComponent(btn.previousElementSibling.dataset.prompt);
   navigator.clipboard.writeText(text).then(() => {
     const orig = btn.textContent;
-    btn.textContent = '✅ Copied!';
+    btn.textContent = '✅ Copiado!';
     setTimeout(() => btn.textContent = orig, 2000);
   });
 }
