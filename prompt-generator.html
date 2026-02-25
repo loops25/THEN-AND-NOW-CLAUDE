@@ -1,0 +1,1535 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>THEN vs NOW — Prompt Generator</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #D4AF37;
+    --gold-light: #F0D060;
+    --dark: #0A0A0A;
+    --dark2: #111111;
+    --dark3: #1A1A1A;
+    --dark4: #222222;
+    --text: #E8E8E8;
+    --text-muted: #888;
+    --accent: #FF4136;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--dark);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Background texture */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: 
+      radial-gradient(ellipse at 20% 50%, rgba(212,175,55,0.05) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 20%, rgba(255,65,54,0.04) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 50px;
+  }
+
+  .header .tag {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 4px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  .header h1 {
+    font-family: 'Bebas Neue', cursive;
+    font-size: clamp(48px, 10vw, 90px);
+    line-height: 0.9;
+    color: var(--text);
+    letter-spacing: 2px;
+  }
+
+  .header h1 span {
+    color: var(--gold);
+  }
+
+  .header p {
+    margin-top: 16px;
+    color: var(--text-muted);
+    font-size: 14px;
+    font-weight: 300;
+    letter-spacing: 0.5px;
+  }
+
+  /* Steps */
+  .step {
+    background: var(--dark2);
+    border: 1px solid #2a2a2a;
+    border-radius: 12px;
+    padding: 28px 32px;
+    margin-bottom: 20px;
+    transition: border-color 0.3s;
+  }
+
+  .step.active { border-color: var(--gold); }
+  .step.done { border-color: #333; opacity: 0.7; }
+
+  .step-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+
+  .step-num {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--gold);
+    color: var(--dark);
+    font-family: 'Bebas Neue', cursive;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .step.done .step-num {
+    background: #333;
+    color: var(--text-muted);
+  }
+
+  .step-title {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 22px;
+    letter-spacing: 1.5px;
+    color: var(--text);
+  }
+
+  /* Category Grid */
+  .category-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 10px;
+  }
+
+  .cat-btn {
+    background: var(--dark3);
+    border: 1px solid #2a2a2a;
+    border-radius: 8px;
+    padding: 14px 10px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .cat-btn:hover {
+    border-color: var(--gold);
+    background: var(--dark4);
+  }
+
+  .cat-btn.selected {
+    border-color: var(--gold);
+    background: rgba(212,175,55,0.1);
+    color: var(--gold);
+  }
+
+  .cat-btn .emoji { font-size: 26px; display: block; margin-bottom: 6px; }
+  .cat-btn .label { font-size: 12px; font-weight: 500; letter-spacing: 0.5px; }
+
+  /* Person Cards */
+  .person-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 10px;
+  }
+
+  .person-btn {
+    background: var(--dark3);
+    border: 1px solid #2a2a2a;
+    border-radius: 8px;
+    padding: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    text-align: left;
+  }
+
+  .person-btn:hover { border-color: var(--gold); background: var(--dark4); }
+  .person-btn.selected { border-color: var(--gold); background: rgba(212,175,55,0.1); color: var(--gold); }
+
+  .person-btn .name { font-size: 13px; font-weight: 600; }
+  .person-btn .sub { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
+
+  /* Options row */
+  .options-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  @media(max-width: 600px) { .options-row { grid-template-columns: 1fr; } }
+
+  .option-group label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 8px;
+  }
+
+  .option-group select,
+  .option-group input[type="number"] {
+    width: 100%;
+    background: var(--dark3);
+    border: 1px solid #2a2a2a;
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    padding: 12px 14px;
+    outline: none;
+    transition: border-color 0.2s;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+
+  .option-group select:focus,
+  .option-group input[type="number"]:focus {
+    border-color: var(--gold);
+  }
+
+  /* Backgrounds list */
+  .bg-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  @media(max-width: 600px) { .bg-grid { grid-template-columns: 1fr; } }
+
+  .bg-btn {
+    background: var(--dark3);
+    border: 1px solid #2a2a2a;
+    border-radius: 8px;
+    padding: 12px 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    text-align: left;
+    font-size: 12px;
+    line-height: 1.4;
+  }
+
+  .bg-btn:hover { border-color: var(--gold); background: var(--dark4); }
+  .bg-btn.selected { border-color: var(--gold); background: rgba(212,175,55,0.1); color: var(--gold-light); }
+
+  /* Generate Button */
+  .generate-btn {
+    width: 100%;
+    background: var(--gold);
+    color: var(--dark);
+    border: none;
+    border-radius: 10px;
+    padding: 18px;
+    font-family: 'Bebas Neue', cursive;
+    font-size: 24px;
+    letter-spacing: 3px;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 10px;
+  }
+
+  .generate-btn:hover {
+    background: var(--gold-light);
+    transform: translateY(-1px);
+  }
+
+  .generate-btn:disabled {
+    background: #333;
+    color: #555;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  /* Output */
+  .output-box {
+    background: var(--dark2);
+    border: 1px solid var(--gold);
+    border-radius: 12px;
+    padding: 28px 32px;
+    margin-top: 20px;
+    display: none;
+  }
+
+  .output-box.visible { display: block; animation: fadeIn 0.4s ease; }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+  .output-label {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 14px;
+    letter-spacing: 3px;
+    color: var(--gold);
+    margin-bottom: 16px;
+  }
+
+  .output-text {
+    background: var(--dark);
+    border: 1px solid #2a2a2a;
+    border-radius: 8px;
+    padding: 20px;
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--text);
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .copy-btn {
+    margin-top: 14px;
+    background: transparent;
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    border-radius: 8px;
+    padding: 10px 22px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: all 0.2s;
+  }
+
+  .copy-btn:hover { background: var(--gold); color: var(--dark); }
+
+  .new-btn {
+    margin-top: 10px;
+    margin-left: 10px;
+    background: transparent;
+    border: 1px solid #444;
+    color: var(--text-muted);
+    border-radius: 8px;
+    padding: 10px 22px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: all 0.2s;
+  }
+
+  .new-btn:hover { border-color: var(--text); color: var(--text); }
+
+  .hidden { display: none !important; }
+
+  /* Auto Series Button */
+  .auto-series-btn {
+    width: 100%;
+    margin-top: 14px;
+    background: transparent;
+    border: 1px dashed var(--gold);
+    color: var(--gold);
+    border-radius: 8px;
+    padding: 13px;
+    font-family: 'Bebas Neue', cursive;
+    font-size: 18px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .auto-series-btn:hover {
+    background: rgba(212,175,55,0.12);
+    border-style: solid;
+  }
+
+  /* Multi Output */
+  .multi-output-box {
+    background: var(--dark2);
+    border: 1px solid var(--gold);
+    border-radius: 12px;
+    padding: 28px 32px;
+    margin-top: 20px;
+    display: none;
+  }
+
+  .multi-output-box.visible { display: block; animation: fadeIn 0.4s ease; }
+
+  .multi-output-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .multi-output-label {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 20px;
+    letter-spacing: 3px;
+    color: var(--gold);
+  }
+
+  .copy-all-btn {
+    background: var(--gold);
+    color: var(--dark);
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.5px;
+  }
+
+  .copy-all-btn:hover { background: var(--gold-light); }
+
+  .prompt-card {
+    background: var(--dark);
+    border: 1px solid #2a2a2a;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 14px;
+    position: relative;
+  }
+
+  .prompt-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+
+  .prompt-card-name {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 16px;
+    letter-spacing: 2px;
+    color: var(--gold);
+  }
+
+  .copy-single-btn {
+    background: transparent;
+    border: 1px solid #333;
+    color: var(--text-muted);
+    border-radius: 6px;
+    padding: 5px 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.5px;
+  }
+
+  .copy-single-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+  .prompt-card-text {
+    font-size: 12px;
+    line-height: 1.6;
+    color: var(--text);
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .regen-btn {
+    margin-top: 14px;
+    background: transparent;
+    border: 1px solid #444;
+    color: var(--text-muted);
+    border-radius: 8px;
+    padding: 10px 22px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: all 0.2s;
+  }
+
+  .regen-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+  /* SEO Block */
+  .seo-block {
+    background: var(--dark3);
+    border: 1px solid #333;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+
+  .seo-block-title {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 13px;
+    letter-spacing: 3px;
+    color: var(--gold);
+    margin-bottom: 10px;
+  }
+
+  .seo-block-text {
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--text);
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .seo-section-divider {
+    border: none;
+    border-top: 1px solid #2a2a2a;
+    margin: 22px 0;
+  }
+
+  .nostalgia-block {
+    background: rgba(212,175,55,0.05);
+    border: 1px solid rgba(212,175,55,0.15);
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-top: 10px;
+    font-size: 12px;
+    line-height: 1.7;
+    color: #ccc;
+  }
+
+  .nostalgia-block .nostalgia-label {
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  .copy-seo-btn {
+    margin-top: 10px;
+    background: transparent;
+    border: 1px solid #444;
+    color: var(--text-muted);
+    border-radius: 6px;
+    padding: 7px 16px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: all 0.2s;
+  }
+
+  .copy-seo-btn:hover { border-color: var(--gold); color: var(--gold); }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <span class="tag">Generador de Prompts</span>
+    <h1>THEN <span>vs</span> NOW</h1>
+    <p>Genera prompts icónicos en segundos · Paso a paso</p>
+  </div>
+
+  <!-- STEP 1: Categoría -->
+  <div class="step active" id="step1">
+    <div class="step-header">
+      <div class="step-num">1</div>
+      <div class="step-title">Elige una categoría</div>
+    </div>
+    <div class="category-grid">
+      <button class="cat-btn" onclick="selectCategory('actores')">
+        <span class="emoji">🎬</span><span class="label">Actores de Cine</span>
+      </button>
+      <button class="cat-btn" onclick="selectCategory('futbolistas')">
+        <span class="emoji">⚽</span><span class="label">Futbolistas</span>
+      </button>
+      <button class="cat-btn" onclick="selectCategory('cantantes')">
+        <span class="emoji">🎤</span><span class="label">Cantantes</span>
+      </button>
+      <button class="cat-btn" onclick="selectCategory('boxeadores')">
+        <span class="emoji">🥊</span><span class="label">Boxeadores</span>
+      </button>
+      <button class="cat-btn" onclick="selectCategory('superhéroes')">
+        <span class="emoji">🦸</span><span class="label">Superhéroes</span>
+      </button>
+      <button class="cat-btn" onclick="selectCategory('presidentes')">
+        <span class="emoji">🏛️</span><span class="label">Líderes Mundiales</span>
+      </button>
+      <button class="cat-btn" onclick="selectCategory('basquetbol')">
+        <span class="emoji">🏀</span><span class="label">Basquetbolistas</span>
+      </button>
+      <button class="cat-btn" onclick="selectCategory('villanos')">
+        <span class="emoji">😈</span><span class="label">Villanos de Cine</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- AUTO SERIES BUTTON -->
+  <div class="hidden" id="autoSeriesSection">
+    <button class="auto-series-btn" onclick="generateAutoSeries()">
+      🎲 GENERAR SERIE AUTOMÁTICA DE 5 PERSONAJES
+    </button>
+  </div>
+
+  <!-- MULTI OUTPUT -->
+  <div class="multi-output-box" id="multiOutputBox">
+    <div class="multi-output-header">
+      <div class="multi-output-label">⚡ SERIE GENERADA — 5 PROMPTS</div>
+      <button class="copy-all-btn" onclick="copyAll()">📋 Copiar Todo</button>
+    </div>
+    <div id="multiOutputCards"></div>
+    <button class="regen-btn" onclick="generateAutoSeries()">🔀 Regenerar serie</button>
+    <button class="new-btn" onclick="resetAll()">↺ Empezar de nuevo</button>
+  </div>
+
+  <!-- STEP 2: Persona -->
+  <div class="step hidden" id="step2">
+    <div class="step-header">
+      <div class="step-num">2</div>
+      <div class="step-title">Elige una persona</div>
+    </div>
+    <div class="person-grid" id="personGrid"></div>
+  </div>
+
+  <!-- STEP 3: Configuración -->
+  <div class="step hidden" id="step3">
+    <div class="step-header">
+      <div class="step-num">3</div>
+      <div class="step-title">Configura tu prompt</div>
+    </div>
+    <div class="options-row">
+      <div class="option-group">
+        <label>Pose</label>
+        <select id="poseSelect">
+          <option value="sitting comfortably, smiling at the camera">Sentado, sonriendo a cámara</option>
+          <option value="standing confidently, arms crossed, smiling">De pie, brazos cruzados</option>
+          <option value="leaning casually against a wall, smiling">Apoyado en pared</option>
+          <option value="crouching dynamically, looking at camera">En cuclillas, dinámico</option>
+          <option value="walking towards the camera, mid-stride, smiling">Caminando hacia cámara</option>
+          <option value="sitting on the ground, relaxed, smiling">Sentado en el suelo, relajado</option>
+        </select>
+      </div>
+      <div class="option-group">
+        <label>¿Cuántas figuras?</label>
+        <input type="number" id="numFigures" min="2" max="8" value="5">
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 4: Fondo -->
+  <div class="step hidden" id="step4">
+    <div class="step-header">
+      <div class="step-num">4</div>
+      <div class="step-title">Elige un fondo icónico</div>
+    </div>
+    <div class="bg-grid" id="bgGrid"></div>
+  </div>
+
+  <!-- GENERATE -->
+  <div class="hidden" id="generateSection">
+    <button class="generate-btn" id="generateBtn" onclick="generatePrompt()">⚡ GENERAR PROMPT</button>
+  </div>
+
+  <!-- OUTPUT -->
+  <div class="output-box" id="outputBox">
+    <div class="output-label">▸ PROMPT GENERADO</div>
+    <div class="output-text" id="outputText"></div>
+    <button class="copy-btn" onclick="copyPrompt()">📋 Copiar Prompt</button>
+    <button class="new-btn" onclick="resetAll()">↺ Generar otro</button>
+  </div>
+
+</div>
+
+<script>
+const DATA = {
+  actores: {
+    persons: [
+      { name: "Arnold Schwarzenegger", sub: "Terminator · Predator · Total Recall" },
+      { name: "Sylvester Stallone", sub: "Rocky · Rambo · Expendables" },
+      { name: "Bruce Willis", sub: "Die Hard · Fifth Element" },
+      { name: "Tom Cruise", sub: "Mission Impossible · Top Gun" },
+      { name: "Keanu Reeves", sub: "Matrix · John Wick · Speed" },
+      { name: "Will Smith", sub: "Ali · Bad Boys · I Am Legend" },
+      { name: "Denzel Washington", sub: "Training Day · Man on Fire" },
+      { name: "Jackie Chan", sub: "Rush Hour · Police Story" },
+    ],
+    backgrounds: {
+      "Arnold Schwarzenegger": ["The jungle exterior from Predator", "The Cyberdyne Systems factory interior from Terminator 2", "The Mars colony interior from Total Recall", "The police station interior from The Terminator", "The street exterior from Terminator 2: Judgment Day"],
+      "Sylvester Stallone": ["The Philadelphia Museum of Art exterior steps from Rocky", "The Vietnam jungle exterior from Rambo: First Blood Part II", "The boxing ring interior from Rocky IV", "The POW camp exterior from Rambo III", "The prison yard exterior from Lock Up"],
+      "Bruce Willis": ["Nakatomi Plaza interior from Die Hard", "The futuristic New York City exterior from The Fifth Element", "The Dunn residence interior from Unbreakable", "The Harlem street exterior from Die Hard with a Vengeance", "The asteroid surface exterior from Armageddon"],
+      "Tom Cruise": ["The IMF headquarters interior from Mission: Impossible", "The Burj Khalifa exterior from Mission: Impossible — Ghost Protocol", "The Top Gun airbase exterior from Top Gun", "The race circuit exterior from Days of Thunder", "The cocktail bar interior from Cocktail"],
+      "Keanu Reeves": ["The Matrix code room interior from The Matrix", "The Continental Hotel interior from John Wick", "The subway station interior from The Matrix", "The rooftop exterior from The Matrix", "The highway exterior from John Wick: Chapter 3"],
+      "Will Smith": ["The boxing ring interior from Ali", "The Miami streets exterior from Bad Boys", "The empty New York City exterior from I Am Legend", "The boxing gym interior from Ali", "The MIB headquarters interior from Men in Black"],
+      "Denzel Washington": ["The Los Angeles streets exterior from Training Day", "The Mexico City exterior from Man on Fire", "The courtroom interior from Philadelphia", "The train interior from The Equalizer", "The warehouse interior from Training Day"],
+      "Jackie Chan": ["The Hong Kong rooftop exterior from Police Story", "The shopping mall interior from Police Story", "The New York City streets exterior from Rush Hour", "The amusement park exterior from Police Story 2", "The ancient temple exterior from The Forbidden Kingdom"],
+    }
+  },
+  futbolistas: {
+    persons: [
+      { name: "Lionel Messi", sub: "FC Barcelona · PSG · Inter Miami" },
+      { name: "Cristiano Ronaldo", sub: "Manchester United · Real Madrid" },
+      { name: "Ronaldinho", sub: "FC Barcelona · AC Milan" },
+      { name: "Zinedine Zidane", sub: "Real Madrid · Juventus" },
+      { name: "Pelé", sub: "Santos · New York Cosmos" },
+      { name: "Diego Maradona", sub: "Napoli · Argentina" },
+      { name: "Neymar Jr.", sub: "FC Barcelona · PSG · Santos" },
+      { name: "Kylian Mbappé", sub: "Paris Saint-Germain · Real Madrid" },
+    ],
+    backgrounds: {
+      "Lionel Messi": ["The Camp Nou stadium interior from FC Barcelona", "The Lusail Stadium exterior from FIFA World Cup Qatar 2022", "The Hard Rock Stadium exterior from Inter Miami CF", "The Wembley Stadium pitch from UEFA Champions League Final", "The Bernabéu exterior during El Clásico"],
+      "Cristiano Ronaldo": ["The Santiago Bernabéu stadium interior from Real Madrid", "The Old Trafford pitch interior from Manchester United", "The Estadio da Luz exterior from Portugal National Team", "The Juventus Stadium interior from Juventus FC", "The Al-Nassr Stadium exterior from Saudi Pro League"],
+      "Ronaldinho": ["The Camp Nou pitch interior from FC Barcelona", "The Maracanã stadium exterior from Brazil National Team", "The San Siro pitch interior from AC Milan", "The Grêmio Arena exterior from Grêmio FC", "The Parc des Princes pitch interior from PSG"],
+      "Zinedine Zidane": ["The Stade de France exterior from France National Team", "The Santiago Bernabéu pitch interior from Real Madrid", "The Delle Alpi Stadium interior from Juventus FC", "The Yokohama stadium exterior from FIFA World Cup 2002 Final", "The San Siro pitch interior from UEFA Champions League"],
+      "Pelé": ["The Maracanã stadium interior from Brazil National Team", "The Vila Belmiro stadium exterior from Santos FC", "The Azteca stadium exterior from FIFA World Cup Mexico 1970", "The Giants Stadium exterior from New York Cosmos", "The Estadio Centenario exterior from FIFA World Cup 1950"],
+      "Diego Maradona": ["The Estadio Azteca pitch interior from FIFA World Cup Mexico 1986", "The Stadio San Paolo exterior from SSC Napoli", "The La Bombonera stadium interior from Boca Juniors", "The Camp Nou exterior from FC Barcelona", "The Estadio Monumental exterior from Argentina National Team"],
+      "Neymar Jr.": ["The Camp Nou pitch interior from FC Barcelona", "The Parc des Princes stadium interior from PSG", "The Maracanã exterior from Brazil National Team", "The Estádio Vila Belmiro interior from Santos FC", "The Lusail Stadium exterior from FIFA World Cup 2022"],
+      "Kylian Mbappé": ["The Parc des Princes pitch interior from Paris Saint-Germain", "The Stade de France exterior from France National Team", "The Santiago Bernabéu interior from Real Madrid", "The Lusail Stadium pitch from FIFA World Cup Qatar 2022 Final", "The Stade Louis II exterior from AS Monaco"],
+    }
+  },
+  cantantes: {
+    persons: [
+      { name: "Michael Jackson", sub: "King of Pop" },
+      { name: "Freddie Mercury", sub: "Queen" },
+      { name: "Elvis Presley", sub: "King of Rock and Roll" },
+      { name: "Eminem", sub: "Hip-Hop · 8 Mile" },
+      { name: "Beyoncé", sub: "Destiny's Child · Renaissance" },
+      { name: "David Bowie", sub: "Ziggy Stardust · Glam Rock" },
+      { name: "Bob Marley", sub: "Reggae · Jamaica" },
+      { name: "Madonna", sub: "Queen of Pop" },
+    ],
+    backgrounds: {
+      "Michael Jackson": ["The Neverland Ranch exterior from Michael Jackson's estate", "The abandoned warehouse exterior from Thriller music video", "The Motown Records studio interior from Jackson 5 era", "The Madison Square Garden stage interior from HIStory World Tour", "The Smooth Criminal tilted room interior from Moonwalker"],
+      "Freddie Mercury": ["The Wembley Stadium stage exterior from Live Aid 1985", "The Mountain Studios interior from Queen in Montreux", "The Rainbow Theatre stage interior from Queen concert", "The Hammersmith Odeon stage interior from Queen concert", "The Innuendo music video set interior"],
+      "Elvis Presley": ["The Sun Studio interior from Memphis Tennessee", "The Las Vegas Hilton showroom stage interior from Elvis in Concert", "The Graceland mansion exterior from Elvis Presley's home", "The Ed Sullivan Show stage interior from 1956", "The Jailhouse Rock prison set interior from the film"],
+      "Eminem": ["The Detroit street exterior from 8 Mile film", "The Shelter rap battle club interior from 8 Mile", "The Slim Shady abandoned house exterior from music video", "The Marshall Mathers home exterior from Detroit", "The Madison Square Garden stage from Eminem concert"],
+      "Beyoncé": ["The Superdome stage interior from Super Bowl XLVII Halftime Show", "The Coachella Valley Music Festival stage exterior", "The Lemonade plantation exterior from visual album", "The Destiny's Child stage interior from early concerts", "The Renaissance World Tour stage interior"],
+      "David Bowie": ["The Hammersmith Odeon stage interior from Ziggy Stardust tour", "The Berlin Hansa Studio interior from Low album sessions", "The Live Aid Wembley stage exterior from 1985", "The Brixton street exterior from David Bowie's birthplace", "The Glass Spider Tour stage interior"],
+      "Bob Marley": ["The Jamaica beach exterior from Bob Marley music videos", "The Tuff Gong Studio interior from Kingston Jamaica", "The One Love Peace Concert stage interior from Kingston 1978", "The Exodus album cover street exterior from London", "The Santa Barbara Bowl stage exterior from last concert"],
+      "Madonna": ["The MTV Video Music Awards stage interior from Like a Virgin 1984", "The Madison Square Garden stage interior from Blond Ambition Tour", "The Evita balcony exterior from the film", "The Material Girl music video set interior", "The Reinvention Tour stage interior"],
+    }
+  },
+  boxeadores: {
+    persons: [
+      { name: "Muhammad Ali", sub: "The Greatest · World Heavyweight" },
+      { name: "Mike Tyson", sub: "Iron Mike · Youngest Heavyweight" },
+      { name: "Rocky Marciano", sub: "The Brockton Blockbuster" },
+      { name: "Sugar Ray Leonard", sub: "Olympic Gold · World Champion" },
+      { name: "Oscar De La Hoya", sub: "Golden Boy · World Champion" },
+      { name: "Floyd Mayweather", sub: "Money · Undefeated Champion" },
+    ],
+    backgrounds: {
+      "Muhammad Ali": ["The Kinshasa boxing ring interior from the Rumble in the Jungle 1974", "The Madison Square Garden ring interior from Fight of the Century 1971", "The Louisville training gym interior from Ali's early career", "The Miami 5th Street Gym interior from Ali's training", "The Zaire stadium exterior from the Rumble in the Jungle"],
+      "Mike Tyson": ["The Convention Center boxing ring interior from Tyson vs Spinks 1988", "The Cus D'Amato gym interior from Catskill New York", "The Tokyo Dome ring interior from Tyson vs Douglas 1990", "The MGM Grand Garden Arena interior from Las Vegas", "The Siberian tiger cage exterior from Mike Tyson's home"],
+      "Rocky Marciano": ["The Yankee Stadium boxing ring exterior from Marciano vs Louis 1951", "The Philadelphia Arena ring interior from early fights", "The Brockton Massachusetts gym interior from training days", "The Chicago Stadium ring interior from Marciano vs Walcott 1952", "The Madison Square Garden ring interior from championship fights"],
+      "Sugar Ray Leonard": ["The Montreal Olympic boxing ring interior from 1976 Olympics", "The Capital Centre ring interior from Leonard vs Duran 1980", "The Caesars Palace outdoor ring exterior from Leonard vs Hearns 1981", "The Las Vegas MGM Grand ring interior from championship bouts", "The Washington DC gym interior from amateur training"],
+      "Oscar De La Hoya": ["The Olympic Auditorium ring interior from Los Angeles", "The Caesars Palace arena interior from De La Hoya vs Whitaker 1997", "The Staples Center ring interior from Los Angeles championship fights", "The Las Vegas MGM Grand arena interior from Golden Boy era", "The Barcelona Olympic ring interior from 1992 Olympics Gold"],
+      "Floyd Mayweather": ["The MGM Grand Garden Arena interior from Las Vegas", "The Mayweather Boxing Club gym interior from Las Vegas", "The Cowboys Stadium ring interior from Mayweather vs Ortiz 2011", "The T-Mobile Arena interior from Mayweather vs McGregor 2017", "The Grand Garden Arena ring interior from Money Team era"],
+    }
+  },
+  superhéroes: {
+    persons: [
+      { name: "Batman", sub: "DC Comics · Dark Knight" },
+      { name: "Spider-Man", sub: "Marvel · Peter Parker" },
+      { name: "Iron Man", sub: "Marvel · Tony Stark" },
+      { name: "Superman", sub: "DC Comics · Man of Steel" },
+      { name: "Thor", sub: "Marvel · God of Thunder" },
+      { name: "Black Panther", sub: "Marvel · T'Challa · Wakanda" },
+    ],
+    backgrounds: {
+      "Batman": ["The Batcave interior from The Dark Knight trilogy", "The Gotham City rooftop exterior from Batman 1989", "The Wayne Manor exterior from Batman Begins", "The Gotham City streets exterior at night from The Dark Knight", "The police headquarters rooftop exterior from The Dark Knight"],
+      "Spider-Man": ["The New York City rooftop exterior from Spider-Man 2002", "The Daily Bugle newsroom interior from Spider-Man 2002", "The Brooklyn Bridge exterior from Spider-Man 2002", "The Times Square exterior from Spider-Man 3", "The Queens apartment exterior from Spider-Man: Homecoming"],
+      "Iron Man": ["The Stark Industries workshop interior from Iron Man 2008", "The Malibu cliff mansion exterior from Iron Man", "The SHIELD helicarrier interior from The Avengers", "The Afghanistan desert exterior from Iron Man 2008", "The Avengers compound exterior from Avengers: Endgame"],
+      "Superman": ["The Fortress of Solitude interior from Superman 1978", "The Daily Planet newsroom interior from Superman 1978", "The Krypton exterior from Man of Steel", "The Metropolis streets exterior from Man of Steel", "The Kent Farm exterior from Smallville Kansas"],
+      "Thor": ["The Asgard palace exterior from Thor 2011", "The New Mexico desert exterior from Thor 2011", "The Rainbow Bridge exterior from Thor 2011", "The Asgard throne room interior from Thor 2011", "The Dark World landscape exterior from Thor: The Dark World"],
+      "Black Panther": ["The Wakanda Golden City exterior from Black Panther 2018", "The Warrior Falls exterior from Black Panther 2018", "The Vibranium mines interior from Black Panther 2018", "The Seoul Korea casino interior from Black Panther 2018", "The Wakanda throne room interior from Black Panther 2018"],
+    }
+  },
+  presidentes: {
+    persons: [
+      { name: "Barack Obama", sub: "44th U.S. President" },
+      { name: "John F. Kennedy", sub: "35th U.S. President" },
+      { name: "Nelson Mandela", sub: "President of South Africa" },
+      { name: "Winston Churchill", sub: "Prime Minister of UK" },
+      { name: "Abraham Lincoln", sub: "16th U.S. President" },
+      { name: "Franklin D. Roosevelt", sub: "32nd U.S. President" },
+    ],
+    backgrounds: {
+      "Barack Obama": ["The White House Oval Office interior from Washington D.C.", "The Grant Park rally exterior from Chicago election night 2008", "The U.S. Capitol steps exterior from inauguration 2009", "The Rose Garden exterior from the White House", "The Air Force One interior from presidential travel"],
+      "John F. Kennedy": ["The White House Oval Office interior from Washington D.C.", "The Dealey Plaza exterior from Dallas Texas 1963", "The Berlin Wall exterior from JFK Berlin speech 1963", "The Cape Canaveral launch pad exterior from NASA visit", "The Vienna summit hall interior from JFK and Khrushchev 1961"],
+      "Nelson Mandela": ["The Robben Island prison exterior from Cape Town South Africa", "The Union Buildings exterior from Pretoria inauguration 1994", "The Victor Verster Prison gate exterior from Mandela release 1990", "The Johannesburg stadium exterior from Freedom Concert 1990", "The Constitutional Court interior from Johannesburg"],
+      "Winston Churchill": ["The House of Commons interior from Westminster London", "The Cabinet War Rooms interior from London WWII", "The Chartwell mansion exterior from Kent England", "The Yalta Conference hall interior from 1945", "The 10 Downing Street exterior from London"],
+      "Abraham Lincoln": ["The Ford's Theatre interior from Washington D.C.", "The Gettysburg battlefield exterior from Pennsylvania 1863", "The White House portico exterior from Washington D.C.", "The Lincoln-Douglas debate stage exterior from Illinois 1858", "The U.S. Capitol dome exterior from Washington D.C."],
+      "Franklin D. Roosevelt": ["The White House Oval Office interior from Washington D.C.", "The Pearl Harbor naval base exterior from Hawaii 1941", "The Yalta Conference hall interior from 1945", "The Hyde Park estate exterior from New York", "The U.S. Capitol interior from State of the Union address"],
+    }
+  },
+  basquetbol: {
+    persons: [
+      { name: "Michael Jordan", sub: "Chicago Bulls · 6x NBA Champion" },
+      { name: "LeBron James", sub: "Lakers · Heat · Cavaliers" },
+      { name: "Kobe Bryant", sub: "Los Angeles Lakers · Black Mamba" },
+      { name: "Magic Johnson", sub: "Los Angeles Lakers · Showtime" },
+      { name: "Larry Bird", sub: "Boston Celtics · Legend" },
+      { name: "Shaquille O'Neal", sub: "Lakers · Heat · Magic" },
+    ],
+    backgrounds: {
+      "Michael Jordan": ["The United Center court interior from Chicago Bulls", "The NBA Finals court interior from The Last Dance 1998", "The Space Jam Tune Squad court interior from the film", "The Dean Smith Center court interior from UNC", "The Salt Lake City arena interior from 1998 NBA Finals"],
+      "LeBron James": ["The Quicken Loans Arena court interior from Cleveland Cavaliers", "The Staples Center court interior from Los Angeles Lakers", "The American Airlines Arena court from Miami Heat championship", "The Oracle Arena court exterior from The Decision era", "The NBA Finals court interior from Cleveland 2016"],
+      "Kobe Bryant": ["The Staples Center court interior from Los Angeles Lakers", "The Madison Square Garden court interior from 81-point game", "The Toyota Center court interior from 2009 NBA Finals", "The Forum Club interior from Los Angeles Lakers legacy", "The Mamba Sports Academy gym interior from Thousand Oaks"],
+      "Magic Johnson": ["The Forum court interior from Showtime Lakers", "The Great Western Forum court interior from LA Lakers", "The Boston Garden court interior from Lakers vs Celtics Finals", "The Indianapolis Market Square Arena court from 1987 NBA Finals", "The Fabulous Forum court exterior from Inglewood California"],
+      "Larry Bird": ["The Boston Garden court interior from Boston Celtics", "The Market Square Arena court interior from Indiana Pacers era", "The Chicago Stadium court interior from Bird vs Jordan era", "The French Lick Indiana gym interior from Bird's hometown", "The Boston Garden parquet floor from NBA Finals"],
+      "Shaquille O'Neal": ["The Staples Center court interior from Los Angeles Lakers", "The American Airlines Arena court interior from Miami Heat", "The Orlando Arena court interior from Orlando Magic era", "The Louisiana Superdome court exterior from New Orleans Hornets", "The Phoenix Suns arena interior from Shaq's time in Phoenix"],
+    }
+  },
+  villanos: {
+    persons: [
+      { name: "The Joker", sub: "DC Comics · Batman villain" },
+      { name: "Darth Vader", sub: "Star Wars · Dark Side" },
+      { name: "Hannibal Lecter", sub: "Silence of the Lambs" },
+      { name: "Anton Chigurh", sub: "No Country for Old Men" },
+      { name: "Thanos", sub: "Marvel · Avengers villain" },
+      { name: "Hans Landa", sub: "Inglourious Basterds" },
+    ],
+    backgrounds: {
+      "The Joker": ["The Gotham City bank interior from The Dark Knight 2008", "The Gotham City hospital exterior from The Dark Knight 2008", "The interrogation room interior from The Dark Knight", "The Gotham subway station interior from Joker 2019", "The Gotham streets exterior at night from Batman 1989"],
+      "Darth Vader": ["The Death Star corridor interior from Star Wars: A New Hope", "The Cloud City interior from The Empire Strikes Back", "The Emperor's throne room interior from Return of the Jedi", "The lava planet Mustafar exterior from Revenge of the Sith", "The Star Destroyer bridge interior from The Empire Strikes Back"],
+      "Hannibal Lecter": ["The Baltimore State Hospital cell interior from Silence of the Lambs", "The Memphis police station interior from Silence of the Lambs", "The Florence museum interior from Hannibal 2001", "The dungeon interior from Silence of the Lambs", "The courtroom interior from Silence of the Lambs"],
+      "Anton Chigurh": ["The Texas desert highway exterior from No Country for Old Men", "The motel room interior from No Country for Old Men", "The West Texas plains exterior from No Country for Old Men", "The gas station interior from No Country for Old Men", "The Eagle Pass border town exterior from No Country for Old Men"],
+      "Thanos": ["The Titan planet surface exterior from Avengers: Infinity War", "The Wakanda battlefield exterior from Avengers: Infinity War", "The Infinity Gauntlet chamber interior from Avengers: Endgame", "The Garden planet exterior from Avengers: Endgame", "The Sanctuary II spaceship interior from Avengers: Infinity War"],
+      "Hans Landa": ["The French farmhouse interior from Inglourious Basterds", "The Parisian cinema exterior from Inglourious Basterds", "The Le Gamaar Cinema interior from Inglourious Basterds", "The Italian tavern interior from Inglourious Basterds", "The German countryside exterior from Inglourious Basterds"],
+    }
+  }
+};
+
+const TECH_SPEC = "A candid, unfiltered iPhone 15 Pro Max. Shot with a 24mm lens at f/11 so the background is fully sharp and in focus (no blur). The image is 100% clean—no text, no letters, no grain. The image is raw, clean, and digital with zero film grain, zero blur, and no filters. It looks like a high-quality snapshot taken just now.";
+
+// Nostalgia data for video overlay text (English)
+const NOSTALGIA = {
+  // ACTORES
+  "Arnold Schwarzenegger": { role: "Austrian Actor", peak: "Peak — 1990", lines: ["Mr. Olympia champion", "bodybuilder turned", "Hollywood megastar"] },
+  "Sylvester Stallone": { role: "American Actor", peak: "Peak — 1982", lines: ["From broke screenwriter", "to Rocky legend", "the ultimate comeback"] },
+  "Bruce Willis": { role: "American Actor", peak: "Peak — 1988", lines: ["Yippee-ki-yay icon", "reinvented the action hero", "one building at a time"] },
+  "Tom Cruise": { role: "American Actor", peak: "Peak — 1986", lines: ["No stunt doubles needed", "the last real action star", "still running at full speed"] },
+  "Keanu Reeves": { role: "Canadian Actor", peak: "Peak — 1999", lines: ["From Ted to Neo", "the one who kept coming back", "beloved by the internet"] },
+  "Will Smith": { role: "American Actor", peak: "Peak — 1996", lines: ["From West Philly rapper", "to Hollywood's biggest star", "Fresh Prince forever"] },
+  "Denzel Washington": { role: "American Actor", peak: "Peak — 2001", lines: ["Two Oscars, zero limits", "intensity personified", "Hollywood's gold standard"] },
+  "Jackie Chan": { role: "Hong Kong Actor", peak: "Peak — 1995", lines: ["Did every stunt himself", "broken bones, world records", "comedy meets martial arts"] },
+  // FUTBOLISTAS
+  "Lionel Messi": { role: "Argentine Footballer", peak: "Peak — 2012", lines: ["8 Ballon d'Or awards", "finally World Champion", "the greatest of all time"] },
+  "Cristiano Ronaldo": { role: "Portuguese Footballer", peak: "Peak — 2013", lines: ["5 Ballon d'Or trophies", "goal machine, no expiry date", "CR7 forever"] },
+  "Ronaldinho": { role: "Brazilian Footballer", peak: "Peak — 2006", lines: ["The smile that changed football", "skills nobody could explain", "pure magic in boots"] },
+  "Zinedine Zidane": { role: "French Footballer", peak: "Peak — 1998", lines: ["World Cup, Euro, Champions League", "three trophies, one genius", "the most elegant player ever"] },
+  "Pelé": { role: "Brazilian Footballer", peak: "Peak — 1970", lines: ["3 World Cup winner", "the original GOAT", "football was invented for him"] },
+  "Diego Maradona": { role: "Argentine Footballer", peak: "Peak — 1986", lines: ["Hand of God, Goal of the Century", "carried Argentina alone", "a legend beyond the pitch"] },
+  "Neymar Jr.": { role: "Brazilian Footballer", peak: "Peak — 2015", lines: ["The heir to Ronaldinho", "dribbles that broke ankles", "still chasing the dream"] },
+  "Kylian Mbappé": { role: "French Footballer", peak: "Peak — 2022", lines: ["World Cup winner at 19", "faster than anyone alive", "the future is now"] },
+  // CANTANTES
+  "Michael Jackson": { role: "American Musician", peak: "Peak — 1983", lines: ["Moonwalk changed pop culture", "Thriller sold 66 million copies", "King of Pop forever"] },
+  "Freddie Mercury": { role: "British Musician", peak: "Peak — 1985", lines: ["Live Aid stunned the world", "the greatest frontman ever", "Bohemian Rhapsody lives on"] },
+  "Elvis Presley": { role: "American Musician", peak: "Peak — 1956", lines: ["Invented rock and roll culture", "The King of rock forever", "still selling out arenas"] },
+  "Eminem": { role: "American Rapper", peak: "Peak — 2002", lines: ["Fastest rapper alive", "8 Mile changed everything", "rap god, no debate"] },
+  "Beyoncé": { role: "American Musician", peak: "Peak — 2013", lines: ["32 Grammy Awards", "Coachella redefined concerts", "Queen Bey, undisputed"] },
+  "David Bowie": { role: "British Musician", peak: "Peak — 1972", lines: ["Ziggy Stardust shocked the world", "reinvented himself every decade", "art was his only limit"] },
+  "Bob Marley": { role: "Jamaican Musician", peak: "Peak — 1977", lines: ["Reggae became a religion", "One Love reached every corner", "his music never died"] },
+  "Madonna": { role: "American Musician", peak: "Peak — 1984", lines: ["Reinvented pop music", "Material Girl shook the world", "Queen of reinvention"] },
+  // BOXEADORES
+  "Muhammad Ali": { role: "American Boxer", peak: "Peak — 1974", lines: ["Float like a butterfly", "3x World Heavyweight Champion", "The Greatest, no question"] },
+  "Mike Tyson": { role: "American Boxer", peak: "Peak — 1988", lines: ["Youngest heavyweight champion ever", "KO'd everyone in his path", "Iron Mike, pure fear"] },
+  "Rocky Marciano": { role: "American Boxer", peak: "Peak — 1952", lines: ["49 fights, 49 wins", "the only undefeated heavyweight champion", "Brockton Blockbuster"] },
+  "Sugar Ray Leonard": { role: "American Boxer", peak: "Peak — 1981", lines: ["Olympic gold to world titles", "Speed and heart combined", "Sugar sweet, deadly fast"] },
+  "Oscar De La Hoya": { role: "American Boxer", peak: "Peak — 1997", lines: ["Golden Boy from East L.A.", "Olympic gold to world titles", "six-division world champion"] },
+  "Floyd Mayweather": { role: "American Boxer", peak: "Peak — 2007", lines: ["50 fights, 50 wins", "The Money era was untouchable", "undefeated, undisputed"] },
+  // SUPERHÉROES
+  "Batman": { role: "DC Comics Hero", peak: "Peak — 2008", lines: ["World's greatest detective", "no powers, pure willpower", "Gotham's dark protector"] },
+  "Spider-Man": { role: "Marvel Comics Hero", peak: "Peak — 2004", lines: ["With great power comes great responsibility", "Queens kid saved the universe", "everyone's favorite web-slinger"] },
+  "Iron Man": { role: "Marvel Comics Hero", peak: "Peak — 2012", lines: ["I am Iron Man", "billionaire genius who saved the universe", "the one who started it all"] },
+  "Superman": { role: "DC Comics Hero", peak: "Peak — 1978", lines: ["The original superhero", "truth, justice, American way", "still the most powerful"] },
+  "Thor": { role: "Marvel Comics Hero", peak: "Peak — 2012", lines: ["God of Thunder, Avengers' powerhouse", "Mjolnir answered his call", "worthy since the beginning"] },
+  "Black Panther": { role: "Marvel Comics Hero", peak: "Peak — 2018", lines: ["Wakanda Forever", "first Black Marvel superhero film", "T'Challa changed cinema"] },
+  // PRESIDENTES
+  "Barack Obama": { role: "44th U.S. President", peak: "Peak — 2008", lines: ["Yes We Can changed America", "first Black U.S. President", "hope was his superpower"] },
+  "John F. Kennedy": { role: "35th U.S. President", peak: "Peak — 1961", lines: ["Ask not what your country can do", "the youngest elected president", "Camelot lives in memory"] },
+  "Nelson Mandela": { role: "President of South Africa", peak: "Peak — 1994", lines: ["27 years in prison, zero bitterness", "forgiveness became his weapon", "Madiba, father of a nation"] },
+  "Winston Churchill": { role: "British Prime Minister", peak: "Peak — 1940", lines: ["Never, never, never give up", "rallied Britain through the Blitz", "the lion who saved democracy"] },
+  "Abraham Lincoln": { role: "16th U.S. President", peak: "Peak — 1863", lines: ["Freed 4 million enslaved people", "preserved the United States", "Honest Abe, timeless legacy"] },
+  "Franklin D. Roosevelt": { role: "32nd U.S. President", peak: "Peak — 1941", lines: ["Led America through Depression and war", "4 terms, no one else came close", "New Deal changed the nation"] },
+  // BASQUETBOL
+  "Michael Jordan": { role: "American Basketball Player", peak: "Peak — 1996", lines: ["6 rings, 6 Finals MVPs", "The Last Dance ended an era", "GOAT debate starts and ends here"] },
+  "LeBron James": { role: "American Basketball Player", peak: "Peak — 2016", lines: ["Came back from 3-1 for Cleveland", "4 rings, 4 different teams", "King James, built different"] },
+  "Kobe Bryant": { role: "American Basketball Player", peak: "Peak — 2008", lines: ["5 championships with the Lakers", "Mamba Mentality changed sports", "forever in our hearts"] },
+  "Magic Johnson": { role: "American Basketball Player", peak: "Peak — 1987", lines: ["Showtime Lakers were unstoppable", "point guard who played every position", "Magic was the perfect name"] },
+  "Larry Bird": { role: "American Basketball Player", peak: "Peak — 1986", lines: ["3 championships, 3 MVPs", "trash-talked and then delivered", "legend from French Lick"] },
+  "Shaquille O'Neal": { role: "American Basketball Player", peak: "Peak — 2002", lines: ["Unstoppable at his peak", "4 NBA titles, 3 Finals MVPs", "Big Diesel, truly one of one"] },
+  // VILLANOS
+  "The Joker": { role: "DC Comics Villain", peak: "Peak — 2008", lines: ["Why so serious?", "Heath Ledger reinvented villainy", "no plan, pure chaos"] },
+  "Darth Vader": { role: "Star Wars Villain", peak: "Peak — 1980", lines: ["I am your father changed cinema", "the most iconic villain ever", "the dark side never looked so good"] },
+  "Hannibal Lecter": { role: "Film Villain", peak: "Peak — 1991", lines: ["8 minutes of screen time, one Oscar", "fava beans and a nice Chianti", "horror wrapped in sophistication"] },
+  "Anton Chigurh": { role: "Film Villain", peak: "Peak — 2007", lines: ["Cattle gun, cold logic", "no country was safe from him", "Javier Bardem terrified everyone"] },
+  "Thanos": { role: "Marvel Villain", peak: "Peak — 2018", lines: ["Perfectly balanced, as all things should be", "wiped out half the universe", "the villain who had a point"] },
+  "Hans Landa": { role: "Film Villain", peak: "Peak — 2009", lines: ["The most charming monster in cinema", "Christoph Waltz won two Oscars for evil", "the detective who hunted humans"] },
+};
+
+// SEO templates per category — 5 PRINCIPLES APPLIED
+// 1. Activates concrete emotion (threat, loss, surprise, nostalgia)
+// 2. Understood in under 1 second
+// 3. Connects with a tension that already exists
+// 4. Title + thumbnail work as a system
+// 5. Leaves something strategically unresolved
+const SEO_TEMPLATES = {
+  actores: {
+    titles: [
+      "They Trained Like Gods, Ruled Hollywood for Decades — Then This Happened 😱🎬",
+      "You Grew Up Believing These Action Stars Were Invincible — Nobody Told You This 💔",
+      "The Action Legends Who Made You Feel Unstoppable… Where Did They All Go? 😢🔥",
+      "Hollywood Paid Them Millions to Be Immortal on Screen — Look at Them Now 😱",
+      "Your Childhood Heroes Were Real to You — What They Look Like Today Will Hurt 💔🎬",
+      "They Were the Last Real Action Stars — And Nobody Noticed When It All Ended 😢",
+    ],
+    descriptions: [
+      "These are the men who made us believe nothing could stop them. From their peak years to today — the transformation no one talks about. Drop a 🔥 if they were part of your childhood. #ThenAndNow #Hollywood #ActionStars #Nostalgia #Shorts",
+      "They ruled Hollywood for decades. We grew up thinking they'd be there forever. Watch what happened to these action legends. Like and follow for more! #Hollywood #ThenVsNow #ActionMovies #Nostalgia #Shorts",
+    ],
+    tags: ["then vs now", "hollywood actors", "action stars", "celebrity transformation", "nostalgia", "movie legends", "Arnold Schwarzenegger", "Sylvester Stallone", "Bruce Willis", "Tom Cruise", "Keanu Reeves", "shorts", "thenandnow", "celebrity then and now", "throwback"],
+  },
+  futbolistas: {
+    titles: [
+      "You Watched These Footballers and Thought They'd Play Forever — Then This Happened 😢⚽",
+      "The Football Gods Who Made You Fall in Love With the Game… Where Are They Now? 💔🏆",
+      "They Carried Entire Nations on Their Backs — Nobody Told You It Would End Like This 😱⚽",
+      "Your Dad Cried Watching These Players — Now You'll Understand Why 😢🔥",
+      "The Footballers Who Defined Your Childhood Are Gone — And You Never Said Goodbye 💔⚽",
+      "These Players Made Football Look Like Magic — What They Lost Will Break Your Heart 😱",
+    ],
+    descriptions: [
+      "From their glorious peak years to today — these are the footballers who defined generations. Drop a ⚽ if you watched them live! #Football #ThenAndNow #Messi #Ronaldo #Nostalgia #Shorts",
+      "They made us fall in love with football. Watching them at their peak was something we'll never forget. How many of these legends did you watch live? 🔥 #Soccer #ThenVsNow #FootballLegends #Shorts",
+    ],
+    tags: ["then vs now", "football legends", "soccer stars", "Messi", "Ronaldo", "Ronaldinho", "Pele", "Maradona", "nostalgia", "peak years", "football transformation", "shorts", "thenandnow", "greatest footballers", "GOAT"],
+  },
+  cantantes: {
+    titles: [
+      "They Sold Out Every Stadium on Earth — Then Something Nobody Expected Happened 😱🎤",
+      "You Grew Up With Their Songs Playing Everywhere — Look at What Time Did to Them 💔🎵",
+      "These Artists Made You Feel Things You Can't Explain — Then It All Disappeared 😢🔥",
+      "The Musicians Who Defined Your Entire Generation Are Unrecognizable Today — See Why 😱🎶",
+      "You Knew Every Word to Their Songs — What Happened Next Will Stay With You 💔🎤",
+      "They Were the Soundtrack of Your Life — And Nobody Warned You It Would End 😢🎵",
+    ],
+    descriptions: [
+      "From stadium-filling legends to pop icons — these are the artists who shaped the soundtrack of our lives. Drop a 🎤 if they were part of your childhood! #Music #ThenAndNow #MusicLegends #Nostalgia #Shorts",
+      "Michael Jackson, Freddie Mercury, Elvis — these artists defined entire eras. See them at their peak and today. Who's your favorite? 🔥 #MusicIcons #ThenVsNow #Nostalgia #Shorts",
+    ],
+    tags: ["then vs now", "music legends", "pop icons", "Michael Jackson", "Freddie Mercury", "Elvis", "Eminem", "Beyonce", "nostalgia", "music transformation", "celebrity then and now", "shorts", "thenandnow", "greatest singers", "music history"],
+  },
+  boxeadores: {
+    titles: [
+      "They Walked Into That Ring and Nobody Could Touch Them — Then This Destroyed It All 😱🥊",
+      "The Fighters Who Made Grown Men Afraid — What Happened to Them Will Shock You 💔🥊",
+      "You Watched These Boxers and Felt Invincible — Look at What Time Did to the Greatest 😢🔥",
+      "These Men Were Built to Be Unstoppable — Nobody Told You How the Story Really Ended 😱🥊",
+      "The Champions Who Made You Believe in Something — Their Fall Will Break Your Heart 💔",
+      "They Were the Most Feared Men Alive — What They Lost Is Something You Can't Get Back 😢🥊",
+    ],
+    descriptions: [
+      "Ali, Tyson, Mayweather — at their peak, nobody could touch them. See these boxing legends at their prime vs today. Drop a 🥊 if you know all of them! #Boxing #ThenAndNow #BoxingLegends #Nostalgia #Shorts",
+      "The greatest fighters who ever lived, at their prime years vs today. The transformation is unreal. Who was the most feared? 🔥 #Boxing #ThenVsNow #MuhammadAli #MikeTyson #Shorts",
+    ],
+    tags: ["then vs now", "boxing legends", "Muhammad Ali", "Mike Tyson", "Floyd Mayweather", "boxing history", "nostalgia", "peak years", "boxing transformation", "greatest boxers", "shorts", "thenandnow", "boxing GOAT", "combat sports"],
+  },
+  "superhéroes": {
+    titles: [
+      "You Believed These Heroes Could Save You — What Happened Behind the Mask Will Hurt 😱🦸",
+      "They Made You Feel Safe as a Kid — Now You'll See What Was Always Hidden From You 💔💥",
+      "The Heroes Who Defined Your Childhood Are Gone — And Nobody Is Coming to Replace Them 😢🦸",
+      "You Grew Up Trusting These Heroes With Everything — Then Hollywood Changed It All 😱🔥",
+      "These Superheroes Made You Want to Be Better — Look at What Time Did to the Icons 💔🦸",
+      "They Were Invincible on Screen — What They Couldn't Tell You Is What Breaks You 😢💥",
+    ],
+    descriptions: [
+      "Batman, Spider-Man, Iron Man — from their first appearance to today. The evolution of our favorite heroes is unreal! Drop a 💥 if you grew up with these! #Superheroes #ThenAndNow #Marvel #DC #Nostalgia #Shorts",
+      "From comic book pages to billion-dollar movies — see how these iconic superheroes have transformed. Which hero defined your childhood? 🔥 #Marvel #DC #ThenVsNow #Superheroes #Shorts",
+    ],
+    tags: ["then vs now", "superheroes", "Marvel", "DC Comics", "Batman", "Spider-Man", "Iron Man", "Superman", "Thor", "Black Panther", "nostalgia", "superhero transformation", "shorts", "thenandnow", "comic book heroes"],
+  },
+  presidentes: {
+    titles: [
+      "They Held the Most Powerful Position on Earth — Then Something Changed Everything 😱🏛️",
+      "You Watched These Leaders Shape the World — What History Books Won't Tell You 💔🌍",
+      "These Men Carried the Weight of the World — And Nobody Warned Them How It Would End 😢🔥",
+      "They Made Speeches That Changed History — Look at What Power Really Does to a Person 😱🏛️",
+      "You Believed These Leaders Could Fix Everything — Then You Saw What It Cost Them 💔🌍",
+      "The Most Powerful Men in History at Their Peak — And What Nobody Tells You About the Fall 😢",
+    ],
+    descriptions: [
+      "Obama, Kennedy, Mandela — at their most powerful moments vs today. These leaders shaped the world we live in. Drop a 🌍 if history fascinates you! #History #ThenAndNow #WorldLeaders #Nostalgia #Shorts",
+      "From iconic speeches to world-changing decisions — see these historical leaders at their peak and today. Which leader inspires you the most? 🔥 #History #ThenVsNow #Leaders #Shorts",
+    ],
+    tags: ["then vs now", "world leaders", "presidents", "Obama", "JFK", "Mandela", "Churchill", "Lincoln", "history", "nostalgia", "historical figures", "shorts", "thenandnow", "political history", "iconic leaders"],
+  },
+  basquetbol: {
+    titles: [
+      "They Dominated Every Court They Walked On — Then This Ended It All 😱🏀",
+      "You Watched These Players and Thought the NBA Would Never Be the Same — You Were Right 💔🔥",
+      "The Basketball Gods Who Made You Believe in Something Impossible — Look at Them Now 😢🏀",
+      "These Players Carried Your City, Your Childhood, Your Hope — Then It All Disappeared 😱💔",
+      "You Grew Up Dreaming About Being Like Them — What Time Did to These NBA Legends Will Hurt 😢🏀",
+      "They Were Untouchable at Their Peak — Nobody Told You How Fast It Would All Be Over 😱🔥",
+    ],
+    descriptions: [
+      "Jordan, LeBron, Kobe, Magic — at their peak, they were untouchable. See these NBA legends at their prime vs today. Drop a 🏀 if you know all of them! #NBA #ThenAndNow #Basketball #Nostalgia #Shorts",
+      "The greatest basketball players who ever played the game, at their prime vs today. Who is the real GOAT? 🔥 #NBA #ThenVsNow #MichaelJordan #LeBron #Shorts",
+    ],
+    tags: ["then vs now", "NBA legends", "basketball", "Michael Jordan", "LeBron James", "Kobe Bryant", "Magic Johnson", "Larry Bird", "Shaq", "nostalgia", "peak years", "NBA transformation", "shorts", "thenandnow", "basketball GOAT"],
+  },
+  villanos: {
+    titles: [
+      "They Were Pure Evil on Screen — What Created These Monsters Will Keep You Up at Night 😱😈",
+      "You Were Terrified of These Villains as a Kid — The Real Story Is Even Darker 💔🔥",
+      "These Villains Made You Check Under Your Bed — Then You Found Out What Was Behind the Mask 😢😈",
+      "They Were So Good at Being Evil That Nobody Stopped to Ask Why — Until Now 😱💀",
+      "You Hated These Villains With Everything You Had — Then You Understood Them and It Got Worse 💔😈",
+      "The Most Terrifying Villains in Cinema at Their Peak — And the Secret Nobody Told You 😱🔥",
+    ],
+    descriptions: [
+      "Joker, Darth Vader, Hannibal Lecter — the villains we never forgot. See cinema's most iconic bad guys then vs now. Drop a 😈 if they still give you chills! #Movies #ThenAndNow #Villains #Nostalgia #Shorts",
+      "Some villains were so good, they stole every scene. From their most terrifying moments to today — the evolution of cinema's greatest evil. 🔥 #Movies #ThenVsNow #Villains #Shorts",
+    ],
+    tags: ["then vs now", "movie villains", "The Joker", "Darth Vader", "Hannibal Lecter", "Thanos", "villains", "cinema", "nostalgia", "iconic villains", "film history", "shorts", "thenandnow", "best movie villains", "Hollywood"],
+  },
+};
+
+let state = {
+  category: null,
+  person: null,
+  pose: null,
+  num: 5,
+  bg: null
+};
+
+function selectCategory(cat) {
+  state = { category: cat, person: null, pose: null, num: 5, bg: null };
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('selected'));
+  event.currentTarget.classList.add('selected');
+
+  // Populate persons
+  const grid = document.getElementById('personGrid');
+  grid.innerHTML = '';
+  DATA[cat].persons.forEach(p => {
+    const btn = document.createElement('button');
+    btn.className = 'person-btn';
+    btn.innerHTML = `<div class="name">${p.name}</div><div class="sub">${p.sub}</div>`;
+    btn.onclick = () => selectPerson(p.name, btn);
+    grid.appendChild(btn);
+  });
+
+  document.getElementById('autoSeriesSection').classList.remove('hidden');
+  document.getElementById('step2').classList.remove('hidden');
+  document.getElementById('step3').classList.add('hidden');
+  document.getElementById('step4').classList.add('hidden');
+  document.getElementById('generateSection').classList.add('hidden');
+  document.getElementById('outputBox').classList.remove('visible');
+  document.getElementById('multiOutputBox').classList.remove('visible');
+  setTimeout(() => document.getElementById('autoSeriesSection').scrollIntoView({behavior:'smooth', block:'nearest'}), 100);
+}
+
+const GROQ_API_KEY = "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";
+
+const CATEGORY_LABELS = {
+  actores: "Hollywood action movie actors",
+  futbolistas: "football/soccer players",
+  cantantes: "music artists and singers",
+  boxeadores: "professional boxers",
+  "superhéroes": "superhero characters from movies and comics",
+  presidentes: "world leaders and presidents",
+  basquetbol: "NBA basketball players",
+  villanos: "movie and TV villains",
+};
+
+async function generateAutoSeries() {
+  const cat = state.category;
+  if (!cat) return;
+
+  const cards = document.getElementById('multiOutputCards');
+  cards.innerHTML = `
+    <div style="text-align:center;padding:40px 20px;">
+      <div style="font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:3px;color:var(--gold);margin-bottom:12px;">
+        ⚡ AI IS BUILDING YOUR SERIES...
+      </div>
+      <div style="color:var(--text-muted);font-size:13px;">Groq is selecting the perfect 5 characters for maximum nostalgia and compatibility</div>
+      <div style="margin-top:20px;display:flex;justify-content:center;gap:6px;">
+        <span style="width:8px;height:8px;background:var(--gold);border-radius:50%;display:inline-block;animation:pulse 1s infinite 0s"></span>
+        <span style="width:8px;height:8px;background:var(--gold);border-radius:50%;display:inline-block;animation:pulse 1s infinite 0.2s"></span>
+        <span style="width:8px;height:8px;background:var(--gold);border-radius:50%;display:inline-block;animation:pulse 1s infinite 0.4s"></span>
+      </div>
+    </div>
+    <style>@keyframes pulse{0%,100%{opacity:0.3;transform:scale(0.8)}50%{opacity:1;transform:scale(1.2)}}</style>
+  `;
+  document.getElementById('multiOutputBox').classList.add('visible');
+  setTimeout(() => document.getElementById('multiOutputBox').scrollIntoView({behavior:'smooth', block:'nearest'}), 100);
+
+  const categoryLabel = CATEGORY_LABELS[cat] || cat;
+
+  const systemPrompt = `You are an expert YouTube Shorts content strategist specializing in "Then vs Now" viral videos. You know exactly which combinations of celebrities create maximum nostalgia, emotional impact, and viewer engagement.
+
+You must respond ONLY with a valid JSON object. No markdown, no explanation, no extra text.`;
+
+  const userPrompt = `Create a perfectly compatible "Then vs Now" series of exactly 5 ${categoryLabel} for a YouTube Shorts video.
+
+Rules for selecting the 5 people:
+- They must be from a similar era so viewers recognize all of them
+- Together they must trigger MAXIMUM nostalgia and emotional impact
+- Each person must be globally iconic and instantly recognizable
+- The combination must feel like "the dream team" that defined an era
+
+For each person provide:
+- name: full name
+- role: short description (e.g. "American Actor", "Brazilian Footballer")  
+- peak: their peak year (e.g. "Peak — 1990")
+- lines: array of exactly 3 short nostalgic lines in American English (max 5 words each), like the example: ["Mr. Olympia champion", "bodybuilder turned", "Hollywood megastar"]
+- background: one iconic location associated with their most famous work, format: "The [location name] [interior/exterior] from [movie/show/event name]"
+- pose: one of these exact values: "sitting comfortably, smiling at the camera" | "standing confidently, arms crossed, smiling" | "leaning casually against a wall, smiling" | "crouching dynamically, looking at camera" | "walking towards the camera, mid-stride, smiling"
+
+Also provide for the WHOLE SERIES:
+- title1, title2, title3: 3 different YouTube titles that follow ALL 5 of these principles:
+  1. Activates a concrete emotion (loss, threat, nostalgia, surprise)
+  2. Understood in under 1 second — direct subject, clear problem
+  3. Connects with a tension that ALREADY EXISTS in the viewer's mind
+  4. Works as a system with the thumbnail — does NOT explain everything
+  5. Leaves ONE strategic piece unresolved — forces the click
+  The titles must feel like "They Trained Like Gods, Ruled Hollywood for Decades — Then This Happened 😱" NOT generic descriptions.
+- description: one YouTube Shorts description with hashtags
+- tags: array of 15 relevant SEO tags
+
+Respond with this exact JSON structure:
+{
+  "persons": [
+    {
+      "name": "",
+      "role": "",
+      "peak": "",
+      "lines": ["", "", ""],
+      "background": "",
+      "pose": ""
+    }
+  ],
+  "seo": {
+    "title1": "",
+    "title2": "",
+    "title3": "",
+    "description": "",
+    "tags": []
+  }
+}`;
+
+  try {
+    // Try direct first, then fallback proxies
+    const GROQ_ENDPOINT = "https://api.groq.com/openai/v1/chat/completions";
+    const PROXIES = [
+      GROQ_ENDPOINT,
+      "https://corsproxy.io/?" + encodeURIComponent(GROQ_ENDPOINT),
+      "https://api.allorigins.win/raw?url=" + encodeURIComponent(GROQ_ENDPOINT),
+    ];
+
+    const bodyPayload = JSON.stringify({
+      model: "llama-3.3-70b-versatile",
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userPrompt }
+      ],
+      temperature: 0.85,
+      max_tokens: 2000,
+    });
+
+    let response = null;
+    let lastError = null;
+
+    for (const url of PROXIES) {
+      try {
+        response = await fetch(url, {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${GROQ_API_KEY}`,
+            "Content-Type": "application/json",
+          },
+          body: bodyPayload
+        });
+        if (response.ok) break;
+      } catch (e) {
+        lastError = e;
+        response = null;
+      }
+    }
+
+    if (!response || !response.ok) {
+      throw new Error(lastError ? lastError.message : `API error ${response?.status}`);
+    }
+
+    const data = await response.json();
+    const raw = data.choices[0].message.content.trim();
+
+    // Clean JSON — remove possible markdown fences
+    const clean = raw.replace(/```json|```/g, '').trim();
+    const result = JSON.parse(clean);
+
+    renderAISeries(result, cat);
+
+  } catch (err) {
+    cards.innerHTML = `
+      <div style="text-align:center;padding:30px;color:var(--accent);">
+        <div style="font-size:24px;margin-bottom:10px;">⚠️</div>
+        <div style="font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:2px;margin-bottom:8px;">ERROR CONNECTING TO GROQ</div>
+        <div style="font-size:13px;color:var(--text-muted);">${err.message}</div>
+        <button class="regen-btn" style="margin-top:16px" onclick="generateAutoSeries()">🔄 Try Again</button>
+      </div>
+    `;
+  }
+}
+
+function renderAISeries(result, cat) {
+  const cards = document.getElementById('multiOutputCards');
+  cards.innerHTML = '';
+  let allPrompts = '';
+
+  const { persons, seo } = result;
+
+  // SEO Block
+  allPrompts += `===== SEO METADATA =====\n\nTITLE OPTION 1:\n${seo.title1}\n\nTITLE OPTION 2:\n${seo.title2}\n\nTITLE OPTION 3:\n${seo.title3}\n\nDESCRIPTION:\n${seo.description}\n\nTAGS:\n${seo.tags.join(', ')}\n\n===== IMAGE PROMPTS =====\n\n`;
+
+  const seoCard = document.createElement('div');
+  seoCard.innerHTML = `
+    <div style="font-family:'Bebas Neue',cursive;font-size:14px;letter-spacing:3px;color:#D4AF37;margin-bottom:14px;">
+      🤖 AI-GENERATED SERIES · 🌐 SEO METADATA
+    </div>
+    <div class="seo-block">
+      <div class="seo-block-title">📌 TITLE OPTION 1 — Pick the one that hits hardest</div>
+      <div class="seo-block-text" id="seoTitle1">${seo.title1}</div>
+      <button class="copy-seo-btn" onclick="copySeoField('seoTitle1', this)">📋 Copy Title 1</button>
+    </div>
+    <div class="seo-block">
+      <div class="seo-block-title">📌 TITLE OPTION 2</div>
+      <div class="seo-block-text" id="seoTitle2">${seo.title2}</div>
+      <button class="copy-seo-btn" onclick="copySeoField('seoTitle2', this)">📋 Copy Title 2</button>
+    </div>
+    <div class="seo-block">
+      <div class="seo-block-title">📌 TITLE OPTION 3</div>
+      <div class="seo-block-text" id="seoTitle3">${seo.title3}</div>
+      <button class="copy-seo-btn" onclick="copySeoField('seoTitle3', this)">📋 Copy Title 3</button>
+    </div>
+    <div class="seo-block">
+      <div class="seo-block-title">📝 DESCRIPTION (SHORTS)</div>
+      <div class="seo-block-text" id="seoDescText">${seo.description}</div>
+      <button class="copy-seo-btn" onclick="copySeoField('seoDescText', this)">📋 Copy Description</button>
+    </div>
+    <div class="seo-block">
+      <div class="seo-block-title">🏷️ TAGS / KEYWORDS</div>
+      <div class="seo-block-text" id="seoTagsText">${seo.tags.join(', ')}</div>
+      <button class="copy-seo-btn" onclick="copySeoField('seoTagsText', this)">📋 Copy Tags</button>
+    </div>
+    <hr class="seo-section-divider">
+    <div style="font-family:'Bebas Neue',cursive;font-size:14px;letter-spacing:3px;color:#D4AF37;margin-bottom:14px;">
+      🎬 IMAGE PROMPTS + VIDEO OVERLAY DATA
+    </div>
+  `;
+  cards.appendChild(seoCard);
+
+  persons.forEach((person, i) => {
+    const prompt = `Name: ${person.name.toUpperCase()}
+Pose: [${person.pose}]
+How many?: 5
+Where?: ${person.background}. ${TECH_SPEC}
+Composition: A tightly framed candid group photo. The central person sits in the bottom half of the frame, head at exact vertical and horizontal center. Their facial features, age, expression, hairstyle, and clothing must match the reference image you provide. They are ${person.pose}.
+Around them are the remaining 4 figures — all strictly iconic characters/versions of ${person.name} — arranged closely in a friendly cluster: kneeling, crouching, or leaning in, with physical contact (e.g., hand on shoulder, arm around back). There are no empty spaces on the left or right edges; the group fills the frame width completely. All figures — including the central person and every surrounding role — have identical head and cranial volume (1:1 scale), and all faces smile warmly at the camera. A small margin (≈10–15% of frame height) is left above the central person's head; no hair or forehead is cropped.
+${TECH_SPEC}`;
+
+    allPrompts += `--- PROMPT ${i+1}: ${person.name.toUpperCase()} ---\n${prompt}\n\nVIDEO OVERLAY:\nNAME: ${person.name.toUpperCase()}\nROLE: ${person.role}\n${person.peak}\nLINE 1: ${person.lines[0]}\nLINE 2: ${person.lines[1]}\nLINE 3: ${person.lines[2]}\n\n`;
+
+    const card = document.createElement('div');
+    card.className = 'prompt-card';
+    card.innerHTML = `
+      <div class="prompt-card-header">
+        <div class="prompt-card-name">${i+1}. ${person.name.toUpperCase()}</div>
+        <button class="copy-single-btn" onclick="copySingle(this)">📋 Copy Prompt</button>
+      </div>
+      <div class="prompt-card-text" data-prompt="${encodeURIComponent(prompt)}">${prompt}</div>
+      <div class="nostalgia-block">
+        <div class="nostalgia-label">🎬 Video Overlay Text</div>
+        <strong>${person.name.toUpperCase()}</strong><br>
+        ${person.role}<br>
+        <span style="color:var(--gold)">${person.peak}</span><br>
+        ${person.lines.join('<br>')}
+      </div>
+    `;
+    cards.appendChild(card);
+  });
+
+  document.getElementById('multiOutputBox').dataset.all = encodeURIComponent(allPrompts);
+  document.querySelector('.multi-output-label').textContent = '🤖 AI SERIES — PROMPTS + SEO';
+  setTimeout(() => document.getElementById('multiOutputBox').scrollIntoView({behavior:'smooth', block:'nearest'}), 100);
+}
+
+// Keep old manual function as fallback (not used by button anymore)
+function _generateAutoSeriesManual() {
+  const cat = state.category;
+  if (!cat) return;
+
+  const persons = DATA[cat].persons;
+  const shuffled = [...persons].sort(() => Math.random() - 0.5).slice(0, Math.min(5, persons.length));
+
+  const poses = [
+    "sitting comfortably, smiling at the camera",
+    "standing confidently, arms crossed, smiling",
+    "leaning casually against a wall, smiling",
+    "crouching dynamically, looking at camera",
+    "walking towards the camera, mid-stride, smiling",
+  ];
+
+  const cards = document.getElementById('multiOutputCards');
+  cards.innerHTML = '';
+
+  let allPrompts = '';
+
+  // --- SEO BLOCK for the whole series ---
+  const seoData = SEO_TEMPLATES[cat];
+
+  // Pick 3 unique random titles
+  const shuffledTitles = [...seoData.titles].sort(() => Math.random() - 0.5).slice(0, 3);
+  const seoDesc = seoData.descriptions[Math.floor(Math.random() * seoData.descriptions.length)];
+  const seoTags = seoData.tags.join(', ');
+
+  // Render SEO block at top
+  const seoCard = document.createElement('div');
+  seoCard.innerHTML = `
+    <div style="font-family:'Bebas Neue',cursive;font-size:14px;letter-spacing:3px;color:#D4AF37;margin-bottom:14px;">
+      🌐 SEO METADATA — FOR THE WHOLE SERIES
+    </div>
+
+    <div class="seo-block">
+      <div class="seo-block-title">📌 TITLE OPTION 1 — Pick the one that hits hardest</div>
+      <div class="seo-block-text" id="seoTitle1">${shuffledTitles[0]}</div>
+      <button class="copy-seo-btn" onclick="copySeoField('seoTitle1', this)">📋 Copy Title 1</button>
+    </div>
+
+    <div class="seo-block">
+      <div class="seo-block-title">📌 TITLE OPTION 2</div>
+      <div class="seo-block-text" id="seoTitle2">${shuffledTitles[1]}</div>
+      <button class="copy-seo-btn" onclick="copySeoField('seoTitle2', this)">📋 Copy Title 2</button>
+    </div>
+
+    <div class="seo-block">
+      <div class="seo-block-title">📌 TITLE OPTION 3</div>
+      <div class="seo-block-text" id="seoTitle3">${shuffledTitles[2]}</div>
+      <button class="copy-seo-btn" onclick="copySeoField('seoTitle3', this)">📋 Copy Title 3</button>
+    </div>
+
+    <div class="seo-block">
+      <div class="seo-block-title">📝 DESCRIPTION (SHORTS)</div>
+      <div class="seo-block-text" id="seoDescText">${seoDesc}</div>
+      <button class="copy-seo-btn" onclick="copySeoField('seoDescText', this)">📋 Copy Description</button>
+    </div>
+
+    <div class="seo-block">
+      <div class="seo-block-title">🏷️ TAGS / KEYWORDS</div>
+      <div class="seo-block-text" id="seoTagsText">${seoTags}</div>
+      <button class="copy-seo-btn" onclick="copySeoField('seoTagsText', this)">📋 Copy Tags</button>
+    </div>
+
+    <hr class="seo-section-divider">
+    <div style="font-family:'Bebas Neue',cursive;font-size:14px;letter-spacing:3px;color:#D4AF37;margin-bottom:14px;">
+      🎬 IMAGE PROMPTS + VIDEO OVERLAY DATA
+    </div>
+  `;
+  cards.appendChild(seoCard);
+
+  // Build all-copy string starting with SEO
+  allPrompts += `===== SEO METADATA =====\n\nTITLE OPTION 1:\n${shuffledTitles[0]}\n\nTITLE OPTION 2:\n${shuffledTitles[1]}\n\nTITLE OPTION 3:\n${shuffledTitles[2]}\n\nDESCRIPTION:\n${seoDesc}\n\nTAGS:\n${seoTags}\n\n===== IMAGE PROMPTS =====\n\n`;
+
+  shuffled.forEach((person, i) => {
+    const bgs = DATA[cat].backgrounds[person.name] || [];
+    const bg = bgs[Math.floor(Math.random() * bgs.length)];
+    const pose = poses[i % poses.length];
+    const num = 5;
+    const nos = NOSTALGIA[person.name] || { role: '', peak: '', lines: [] };
+
+    const nostalgiaOverlay = `NAME: ${person.name.toUpperCase()}
+ROLE: ${nos.role}
+${nos.peak}
+LINE 1: ${nos.lines[0] || ''}
+LINE 2: ${nos.lines[1] || ''}
+LINE 3: ${nos.lines[2] || ''}`;
+
+    const prompt = `Name: ${person.name.toUpperCase()}
+Pose: [${pose}]
+How many?: ${num}
+Where?: ${bg}. ${TECH_SPEC}
+Composition: A tightly framed candid group photo. The central person sits in the bottom half of the frame, head at exact vertical and horizontal center. Their facial features, age, expression, hairstyle, and clothing must match the reference image you provide. They are ${pose}.
+Around them are the remaining ${num - 1} figures — all strictly iconic characters/versions of ${person.name} — arranged closely in a friendly cluster: kneeling, crouching, or leaning in, with physical contact (e.g., hand on shoulder, arm around back). There are no empty spaces on the left or right edges; the group fills the frame width completely. All figures — including the central person and every surrounding role — have identical head and cranial volume (1:1 scale), and all faces smile warmly at the camera. A small margin (≈10–15% of frame height) is left above the central person's head; no hair or forehead is cropped.
+${TECH_SPEC}`;
+
+    allPrompts += `--- PROMPT ${i+1}: ${person.name.toUpperCase()} ---\n${prompt}\n\nVIDEO OVERLAY:\n${nostalgiaOverlay}\n\n`;
+
+    const card = document.createElement('div');
+    card.className = 'prompt-card';
+    card.innerHTML = `
+      <div class="prompt-card-header">
+        <div class="prompt-card-name">${i+1}. ${person.name.toUpperCase()}</div>
+        <button class="copy-single-btn" onclick="copySingle(this)">📋 Copy Prompt</button>
+      </div>
+      <div class="prompt-card-text" data-prompt="${encodeURIComponent(prompt)}">${prompt}</div>
+      <div class="nostalgia-block">
+        <div class="nostalgia-label">🎬 Video Overlay Text</div>
+        <strong>${person.name.toUpperCase()}</strong><br>
+        ${nos.role}<br>
+        <span style="color:var(--gold)">${nos.peak}</span><br>
+        ${nos.lines.join('<br>')}
+      </div>
+    `;
+    cards.appendChild(card);
+  });
+
+  document.getElementById('multiOutputBox').dataset.all = encodeURIComponent(allPrompts);
+  document.getElementById('multiOutputBox').classList.add('visible');
+
+  // Update header label
+  document.querySelector('.multi-output-label').textContent = '⚡ SERIE GENERADA — PROMPTS + SEO';
+
+  setTimeout(() => document.getElementById('multiOutputBox').scrollIntoView({behavior:'smooth', block:'nearest'}), 100);
+}
+
+function copySeoField(id, btn) {
+  const text = document.getElementById(id).textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const orig = btn.textContent;
+    btn.textContent = '✅ Copied!';
+    setTimeout(() => btn.textContent = orig, 2000);
+  });
+}
+
+function copySingle(btn) {
+  const text = decodeURIComponent(btn.closest('.prompt-card').querySelector('.prompt-card-text').dataset.prompt);
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = '✅ Copiado';
+    setTimeout(() => btn.textContent = '📋 Copiar', 2000);
+  });
+}
+
+function copyAll() {
+  const text = decodeURIComponent(document.getElementById('multiOutputBox').dataset.all || '');
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.querySelector('.copy-all-btn');
+    btn.textContent = '✅ ¡Todo Copiado!';
+    setTimeout(() => btn.textContent = '📋 Copiar Todo', 2000);
+  });
+}
+
+function selectPerson(name, btn) {
+  state.person = name;
+  document.querySelectorAll('.person-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+
+  document.getElementById('step3').classList.remove('hidden');
+
+  // Populate backgrounds
+  const bgGrid = document.getElementById('bgGrid');
+  bgGrid.innerHTML = '';
+  const bgs = DATA[state.category].backgrounds[name] || [];
+  bgs.forEach((bg, i) => {
+    const btn2 = document.createElement('button');
+    btn2.className = 'bg-btn';
+    btn2.textContent = `${i+1}. ${bg}`;
+    btn2.onclick = () => selectBg(bg, btn2);
+    bgGrid.appendChild(btn2);
+  });
+
+  document.getElementById('step4').classList.remove('hidden');
+  document.getElementById('generateSection').classList.add('hidden');
+  document.getElementById('outputBox').classList.remove('visible');
+  setTimeout(() => document.getElementById('step3').scrollIntoView({behavior:'smooth', block:'nearest'}), 100);
+}
+
+function selectBg(bg, btn) {
+  state.bg = bg;
+  document.querySelectorAll('.bg-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  document.getElementById('generateSection').classList.remove('hidden');
+  setTimeout(() => document.getElementById('generateSection').scrollIntoView({behavior:'smooth', block:'nearest'}), 100);
+}
+
+function generatePrompt() {
+  const pose = document.getElementById('poseSelect').value;
+  const num = parseInt(document.getElementById('numFigures').value) || 5;
+  const name = state.person;
+  const bg = state.bg + ". " + TECH_SPEC;
+
+  const catLabel = state.category;
+
+  const prompt = `Name: ${name.toUpperCase()}
+Pose: [${pose}]
+How many?: ${num}
+Where?: ${bg}
+Composition: A tightly framed candid group photo. The central person sits in the bottom half of the frame, head at exact vertical and horizontal center. Their facial features, age, expression, hairstyle, and clothing must match the reference image you provide. They are ${pose}.
+Around them are the remaining ${num - 1} figures — all strictly iconic characters/versions of ${name} — arranged closely in a friendly cluster: kneeling, crouching, or leaning in, with physical contact (e.g., hand on shoulder, arm around back). There are no empty spaces on the left or right edges; the group fills the frame width completely. All figures — including the central person and every surrounding role — have identical head and cranial volume (1:1 scale), and all faces smile warmly at the camera. A small margin (≈10–15% of frame height) is left above the central person's head; no hair or forehead is cropped.
+${TECH_SPEC}`;
+
+  document.getElementById('outputText').textContent = prompt;
+  document.getElementById('outputBox').classList.add('visible');
+  setTimeout(() => document.getElementById('outputBox').scrollIntoView({behavior:'smooth', block:'nearest'}), 100);
+}
+
+function copyPrompt() {
+  const text = document.getElementById('outputText').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.querySelector('.copy-btn');
+    btn.textContent = '✅ ¡Copiado!';
+    setTimeout(() => btn.textContent = '📋 Copiar Prompt', 2000);
+  });
+}
+
+function resetAll() {
+  state = { category: null, person: null, pose: null, num: 5, bg: null };
+  document.querySelectorAll('.cat-btn, .person-btn, .bg-btn').forEach(b => b.classList.remove('selected'));
+  document.getElementById('autoSeriesSection').classList.add('hidden');
+  document.getElementById('step2').classList.add('hidden');
+  document.getElementById('step3').classList.add('hidden');
+  document.getElementById('step4').classList.add('hidden');
+  document.getElementById('generateSection').classList.add('hidden');
+  document.getElementById('outputBox').classList.remove('visible');
+  document.getElementById('multiOutputBox').classList.remove('visible');
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+</script>
+</body>
+</html>
