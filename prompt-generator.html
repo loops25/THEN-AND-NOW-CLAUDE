@@ -1365,6 +1365,32 @@ async function generateAutoSeries() {
 
   const categoryLabel = CATEGORY_LABELS[cat] || cat;
 
+  // Generate random variety signals to force different selections each time
+  const eras = {
+    actores: ["1970s-1980s", "1980s-1990s", "1990s-2000s", "2000s-2010s"],
+    futbolistas: ["1970s-1980s", "1980s-1990s", "1990s-2000s", "2000s-2010s", "2010s-2020s"],
+    cantantes: ["1960s-1970s", "1970s-1980s", "1980s-1990s", "1990s-2000s", "2000s-2010s"],
+    boxeadores: ["1960s-1970s", "1970s-1980s", "1980s-1990s", "1990s-2000s", "2000s-2010s"],
+    "superhéroes": ["Marvel Cinematic Universe", "DC Films", "classic 1980s-1990s", "2000s comic book era", "2010s era"],
+    presidentes: ["20th century early", "mid 20th century", "late 20th century", "21st century"],
+    basquetbol: ["1980s Showtime era", "1990s golden era", "2000s era", "2010s era"],
+    villanos: ["1970s-1980s classic", "1980s-1990s", "1990s-2000s", "2000s-2010s"],
+  };
+
+  const tiers = ["mega-icons", "cult legends", "underrated icons", "fan favorites", "global legends"];
+  const angles = ["emotional loss", "betrayal of expectations", "nostalgia as pain", "childhood heroes vanishing", "the price of fame"];
+
+  const eraList = eras[cat] || ["1980s-1990s", "1990s-2000s", "2000s-2010s"];
+  const randomEra = eraList[Math.floor(Math.random() * eraList.length)];
+  const randomTier = tiers[Math.floor(Math.random() * tiers.length)];
+  const randomAngle = angles[Math.floor(Math.random() * angles.length)];
+  const randomSeed = Math.floor(Math.random() * 10000);
+
+  // Track last used names to avoid repetition (stored in window)
+  if (!window.usedPersons) window.usedPersons = {};
+  if (!window.usedPersons[cat]) window.usedPersons[cat] = [];
+  const avoidList = window.usedPersons[cat].slice(-10).join(', ');
+
   const systemPrompt = `You are an elite YouTube Shorts content strategist with deep knowledge of viral "Then vs Now" content. You specialize in creating emotionally devastating titles that make viewers STOP scrolling.
 
 You understand the 5 principles of an unstoppable YouTube title:
@@ -1377,27 +1403,32 @@ You understand the 5 principles of an unstoppable YouTube title:
 BAD titles (never generate these): "Action Stars Then vs Now", "What Happened to These Legends?", "The Heroes Who Disappeared"
 GOOD titles (this is the required standard): "They Trained Like Gods and Ruled the World — Then Nobody Warned Them It Would End Like This 😱", "You Grew Up Believing These Men Were Invincible — What Time Did to Them Will Break You 💔", "Your Childhood Heroes Were Unstoppable on Screen — Nobody Told You What Was Happening Behind It 😢"
 
+VARIETY SEED: ${randomSeed} — use this to generate a fresh, unexpected combination every time.
+
 You must respond ONLY with a valid JSON object. No markdown, no explanation, no extra text whatsoever.`;
 
-  const userPrompt = `Create a perfectly compatible "Then vs Now" series of exactly 5 ${categoryLabel} for a YouTube Shorts video.
+  const userPrompt = `Create a "Then vs Now" series of exactly 5 ${categoryLabel} for a YouTube Shorts video.
 
-SELECTION RULES:
-- Same era — viewers must recognize ALL 5 instantly
-- Together they trigger MAXIMUM nostalgia and emotional impact
-- The combination feels like THE dream team that defined a generation
-- Globally iconic, not regional
+CRITICAL VARIETY RULES — read carefully:
+- Focus on the ${randomEra} era specifically
+- Choose ${randomTier} — NOT always the most obvious top 5
+- The emotional angle for the titles should be: ${randomAngle}
+- AVOID these names that were already used recently: ${avoidList || 'none yet'}
+- SURPRISE the viewer with an unexpected but perfectly coherent combination
+- Think beyond the most obvious choices — there are hundreds of iconic ${categoryLabel}, explore them
+- The combination must still be recognizable to a wide global audience
 
 For EACH person provide:
 - name: full name
 - role: short nationality + profession (e.g. "American Actor", "Brazilian Footballer")
 - peak: peak year as "Peak — YEAR"
 - lines: exactly 3 ultra-short nostalgic lines in American English (max 5 words each). Must trigger nostalgia and admiration. Example: ["Mr. Olympia champion", "bodybuilder turned", "Hollywood megastar"]
-- backgrounds: exactly 3 DIFFERENT iconic locations that are visually SPECTACULAR and cinematic. Format: "The [specific location name] [interior/exterior] from [exact title]". Make them dramatic and visually distinct from each other.
-- backgroundLabels: exactly 3 descriptions IN SPANISH (2-3 sentences each) explaining what each background looks like visually so the user can decide which to use. Be specific, evocative and visual. Example: "La oscura y húmeda jungla de Predator, con árboles gigantes, niebla densa y luz filtrada entre las copas. Un fondo cinematográfico y lleno de tensión."
+- backgrounds: exactly 3 DIFFERENT iconic locations that are visually SPECTACULAR and cinematic. Format: "The [specific location name] [interior/exterior] from [exact title]". Make them dramatically different from each other visually.
+- backgroundLabels: exactly 3 descriptions IN SPANISH (2-3 sentences each) explaining what each background looks like visually. Be specific, evocative and cinematic. Example: "La oscura y húmeda jungla de Predator, con árboles gigantes, niebla densa y luz filtrada entre las copas. Un fondo cinematográfico y lleno de tensión."
 - pose: one of: "sitting comfortably, smiling at the camera" | "standing confidently, arms crossed, smiling" | "leaning casually against a wall, smiling" | "crouching dynamically, looking at camera" | "walking towards the camera, mid-stride, smiling"
 
 For the WHOLE SERIES in "seo":
-- title1, title2, title3: 3 completely different series-level YouTube titles. CRITICAL: These must be emotionally devastating, not descriptive. Each must use a different emotional angle (loss, betrayal of expectations, nostalgia as pain). The viewer must feel "this is about MY childhood, something I lost." Apply all 5 principles at maximum intensity. NO generic phrases.
+- title1, title2, title3: 3 completely different series-level YouTube titles using the "${randomAngle}" angle. CRITICAL: emotionally devastating, not descriptive. Each uses a different emotional trigger. NO generic phrases. Apply all 5 principles at maximum intensity.
 - description: emotionally charged YouTube Shorts description in English with hashtags
 - tags: array of 15 SEO tags
 
@@ -1438,7 +1469,7 @@ Respond with ONLY this exact JSON structure:
         { role: "system", content: systemPrompt },
         { role: "user", content: userPrompt }
       ],
-      temperature: 0.85,
+      temperature: 1.1,
       max_tokens: 4000,
     });
 
@@ -1474,6 +1505,15 @@ Respond with ONLY this exact JSON structure:
     const result = JSON.parse(clean);
 
     renderAISeries(result, cat);
+
+    // Save used persons to avoid repetition next time
+    if (!window.usedPersons) window.usedPersons = {};
+    if (!window.usedPersons[cat]) window.usedPersons[cat] = [];
+    result.persons.forEach(p => {
+      if (!window.usedPersons[cat].includes(p.name)) {
+        window.usedPersons[cat].push(p.name);
+      }
+    });
 
   } catch (err) {
     cards.innerHTML = `
