@@ -837,29 +837,20 @@
       <div class="step-title">Elige una categoría</div>
     </div>
     <div class="category-grid">
+      <button class="cat-btn" onclick="selectCategory('cantantes')">
+        <span class="emoji">🎤</span><span class="label">Cantantes</span>
+      </button>
+      <button class="cat-btn" onclick="selectCategory('wwe')">
+        <span class="emoji">🤼</span><span class="label">WWE Luchadores</span>
+      </button>
       <button class="cat-btn" onclick="selectCategory('actores')">
         <span class="emoji">🎬</span><span class="label">Actores de Cine</span>
       </button>
       <button class="cat-btn" onclick="selectCategory('futbolistas')">
         <span class="emoji">⚽</span><span class="label">Futbolistas</span>
       </button>
-      <button class="cat-btn" onclick="selectCategory('cantantes')">
-        <span class="emoji">🎤</span><span class="label">Cantantes</span>
-      </button>
       <button class="cat-btn" onclick="selectCategory('boxeadores')">
         <span class="emoji">🥊</span><span class="label">Boxeadores</span>
-      </button>
-      <button class="cat-btn" onclick="selectCategory('superhéroes')">
-        <span class="emoji">🦸</span><span class="label">Superhéroes</span>
-      </button>
-      <button class="cat-btn" onclick="selectCategory('presidentes')">
-        <span class="emoji">🏛️</span><span class="label">Líderes Mundiales</span>
-      </button>
-      <button class="cat-btn" onclick="selectCategory('basquetbol')">
-        <span class="emoji">🏀</span><span class="label">Basquetbolistas</span>
-      </button>
-      <button class="cat-btn" onclick="selectCategory('villanos')">
-        <span class="emoji">😈</span><span class="label">Villanos de Cine</span>
       </button>
     </div>
   </div>
@@ -1280,20 +1271,20 @@ const SEO_TEMPLATES = {
     ],
     tags: ["then vs now", "NBA legends", "basketball", "Michael Jordan", "LeBron James", "Kobe Bryant", "Magic Johnson", "Larry Bird", "Shaq", "nostalgia", "peak years", "NBA transformation", "shorts", "thenandnow", "basketball GOAT"],
   },
-  villanos: {
+  wwe: {
     titles: [
-      "They Were Pure Evil on Screen — What Created These Monsters Will Keep You Up at Night 😱😈",
-      "You Were Terrified of These Villains as a Kid — The Real Story Is Even Darker 💔🔥",
-      "These Villains Made You Check Under Your Bed — Then You Found Out What Was Behind the Mask 😢😈",
-      "They Were So Good at Being Evil That Nobody Stopped to Ask Why — Until Now 😱💀",
-      "You Hated These Villains With Everything You Had — Then You Understood Them and It Got Worse 💔😈",
-      "The Most Terrifying Villains in Cinema at Their Peak — And the Secret Nobody Told You 😱🔥",
+      "You Screamed Their Names Every Single Week — Then The Lights Went Out and Nobody Warned You 😢🤼",
+      "These Wrestlers Were the Closest Thing to Real Heroes Your Childhood Ever Had — Look at Them Now 💔🔥",
+      "They Made You Believe the Fight Was Real — What Happened to These Legends Will Break You 😱🤼",
+      "You Grew Up Counting the Days Until Monday Night — Then It All Disappeared and Nobody Said Goodbye 😢",
+      "The Wrestlers Who Defined Your Entire Childhood Are Unrecognizable Today — And Nobody Prepared You 💔😱",
+      "They Were Invincible in That Ring Every Week — What Time Did to These WWE Legends Will Hurt 😢🏆",
     ],
     descriptions: [
-      "Joker, Darth Vader, Hannibal Lecter — the villains we never forgot. See cinema's most iconic bad guys then vs now. Drop a 😈 if they still give you chills! #Movies #ThenAndNow #Villains #Nostalgia #Shorts",
-      "Some villains were so good, they stole every scene. From their most terrifying moments to today — the evolution of cinema's greatest evil. 🔥 #Movies #ThenVsNow #Villains #Shorts",
+      "Stone Cold, The Rock, Undertaker, Hulk Hogan — the wrestlers who made Monday nights sacred. See them at their peak vs today. Drop a 🤼 if you remember every entrance! #WWE #ThenAndNow #Wrestling #Nostalgia #Shorts",
+      "They made us believe anything was possible inside that ring. From their glory days to today — the transformation of WWE's greatest legends. Who was your favorite? 🔥 #WWE #WWF #ThenVsNow #Wrestling #Shorts",
     ],
-    tags: ["then vs now", "movie villains", "The Joker", "Darth Vader", "Hannibal Lecter", "Thanos", "villains", "cinema", "nostalgia", "iconic villains", "film history", "shorts", "thenandnow", "best movie villains", "Hollywood"],
+    tags: ["then vs now", "WWE legends", "WWF", "wrestling", "Stone Cold Steve Austin", "The Rock", "Undertaker", "Hulk Hogan", "nostalgia", "attitude era", "golden era", "shorts", "thenandnow", "wrestling legends", "WWE then and now"],
   },
 };
 
@@ -1310,19 +1301,24 @@ function selectCategory(cat) {
   document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('selected'));
   event.currentTarget.classList.add('selected');
 
-  // Populate persons
+  // Populate persons — only if DATA exists for this category
   const grid = document.getElementById('personGrid');
   grid.innerHTML = '';
-  DATA[cat].persons.forEach(p => {
-    const btn = document.createElement('button');
-    btn.className = 'person-btn';
-    btn.innerHTML = `<div class="name">${p.name}</div><div class="sub">${p.sub}</div>`;
-    btn.onclick = () => selectPerson(p.name, btn);
-    grid.appendChild(btn);
-  });
+  if (DATA[cat] && DATA[cat].persons) {
+    DATA[cat].persons.forEach(p => {
+      const btn = document.createElement('button');
+      btn.className = 'person-btn';
+      btn.innerHTML = `<div class="name">${p.name}</div><div class="sub">${p.sub}</div>`;
+      btn.onclick = () => selectPerson(p.name, btn);
+      grid.appendChild(btn);
+    });
+    document.getElementById('step2').classList.remove('hidden');
+  } else {
+    // AI-only category (like WWE) — hide manual steps
+    document.getElementById('step2').classList.add('hidden');
+  }
 
   document.getElementById('autoSeriesSection').classList.remove('hidden');
-  document.getElementById('step2').classList.remove('hidden');
   document.getElementById('step3').classList.add('hidden');
   document.getElementById('step4').classList.add('hidden');
   document.getElementById('generateSection').classList.add('hidden');
@@ -1334,14 +1330,11 @@ function selectCategory(cat) {
 const GROQ_API_KEY = "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";
 
 const CATEGORY_LABELS = {
-  actores: "Hollywood action movie actors",
-  futbolistas: "football/soccer players",
-  cantantes: "music artists and singers",
-  boxeadores: "professional boxers",
-  "superhéroes": "superhero characters from movies and comics",
-  presidentes: "world leaders and presidents",
-  basquetbol: "NBA basketball players",
-  villanos: "movie and TV villains",
+  cantantes: "American/Western music artists — specifically Pop 80s-90s, Classic Rock, Soul/R&B, and Latin Pop. Target audience is 45-65 year olds from USA, Brazil, Mexico and Latin America who grew up with these artists. ONLY include artists that this demographic would instantly recognize and feel nostalgic about. Examples of PERFECT picks: Michael Jackson, Whitney Houston, Madonna, Lionel Richie, Gloria Estefan, Prince, George Michael, Celine Dion, Mariah Carey, Bon Jovi, Journey, Fleetwood Mac, Earth Wind & Fire, Barry White, Chaka Khan, Luis Miguel, Juan Gabriel, Marc Anthony. AVOID: K-pop, J-pop, African artists, or anyone outside Western/Latin music culture.",
+  wwe: "WWE professional wrestlers — specifically from the Golden Era 80s (Hulk Hogan, André the Giant, Randy Savage, Ric Flair), Attitude Era 90s (Stone Cold Steve Austin, The Rock, Undertaker, Mankind, DX, Shawn Michaels), and Ruthless Aggression 2000s (John Cena, Batista, Eddie Guerrero, Rey Mysterio, Edge, Kurt Angle). Target audience is 35-65 year olds from USA and Latin America who watched WWE/WWF as kids. ONLY include wrestlers that this demographic would instantly recognize. AVOID: recent wrestlers from 2015+.",
+  actores: "Hollywood action/drama movie actors from the 1970s-2000s — the golden age of cinema that a 45-65 year old audience from USA and Latin America grew up watching. ONLY include globally iconic Western actors they would recognize: Arnold Schwarzenegger, Sylvester Stallone, Bruce Willis, Tom Cruise, Harrison Ford, Mel Gibson, Eddie Murphy, Robin Williams, Al Pacino, Robert De Niro, Clint Eastwood, Paul Newman, Jack Nicholson, Dustin Hoffman, Richard Gere, Kevin Costner, Tom Hanks. AVOID: Asian, African, or non-Western actors that this demographic would not recognize.",
+  futbolistas: "Football/soccer players who are iconic to a 45-65 year old Latin American and US audience — players from 1970s-2010s that Brazil, Mexico, and the Spanish-speaking world truly worshipped. PERFECT picks: Pelé, Maradona, Ronaldinho, Zidane, Ronaldo Nazário (R9), Messi, Roberto Carlos, Romário, Bebeto, Hugo Sánchez, Cuauhtémoc Blanco, Riquelme, Pavel Pardo. AVOID: obscure European or Asian players this demographic would not recognize.",
+  boxeadores: "Professional boxers who are iconic to a 45-65 year old audience from USA and Latin America. The legends they grew up watching fight. PERFECT picks: Muhammad Ali, Mike Tyson, Sugar Ray Leonard, Roberto Durán, Julio César Chávez, Oscar De La Hoya, Riddick Bowe, Evander Holyfield, George Foreman, Rocky Marciano, Marvelous Marvin Hagler, Thomas Hearns, Joe Frazier, Alexis Argüello, Salvador Sánchez. AVOID: obscure fighters or non-Western boxers this demographic would not recognize.",
 };
 
 async function generateAutoSeries() {
@@ -1367,18 +1360,60 @@ async function generateAutoSeries() {
 
   // Generate random variety signals to force different selections each time
   const eras = {
-    actores: ["1970s-1980s", "1980s-1990s", "1990s-2000s", "2000s-2010s"],
-    futbolistas: ["1970s-1980s", "1980s-1990s", "1990s-2000s", "2000s-2010s", "2010s-2020s"],
-    cantantes: ["1960s-1970s", "1970s-1980s", "1980s-1990s", "1990s-2000s", "2000s-2010s"],
-    boxeadores: ["1960s-1970s", "1970s-1980s", "1980s-1990s", "1990s-2000s", "2000s-2010s"],
-    "superhéroes": ["Marvel Cinematic Universe", "DC Films", "classic 1980s-1990s", "2000s comic book era", "2010s era"],
-    presidentes: ["20th century early", "mid 20th century", "late 20th century", "21st century"],
-    basquetbol: ["1980s Showtime era", "1990s golden era", "2000s era", "2010s era"],
-    villanos: ["1970s-1980s classic", "1980s-1990s", "1990s-2000s", "2000s-2010s"],
+    cantantes: [
+      "Pop icons of the 1980s (Michael Jackson, Madonna, Prince, Whitney Houston era)",
+      "Soul and R&B legends of the 1970s-1980s (Earth Wind & Fire, Barry White, Chaka Khan era)",
+      "Rock legends of the 1970s-1980s (Bon Jovi, Journey, Fleetwood Mac, Queen era)",
+      "Pop divas of the 1990s (Mariah Carey, Celine Dion, Whitney Houston, Gloria Estefan era)",
+      "Latin Pop icons of the 1980s-2000s (Luis Miguel, Juan Gabriel, Marc Anthony, Selena era)",
+      "R&B and Soul icons of the 1990s (Boyz II Men, TLC, En Vogue, Brian McKnight era)",
+    ],
+    wwe: [
+      "WWF Golden Era 1980s (Hulk Hogan, André the Giant, Randy Savage, Ric Flair, Jake Roberts)",
+      "WWF Attitude Era late 1990s (Stone Cold Steve Austin, The Rock, Undertaker, Mankind, DX)",
+      "WWF/WWE transition era 1999-2001 (Triple H, Kurt Angle, Chris Jericho, Edge, Christian)",
+      "WWE Ruthless Aggression early 2000s (John Cena, Batista, Eddie Guerrero, Rey Mysterio, Brock Lesnar)",
+      "WWE mid 2000s (Edge, Randy Orton, Shawn Michaels, Batista, JBL)",
+      "Latin WWE legends mix (Rey Mysterio, Eddie Guerrero, Carlos Colón, Mil Máscaras, Konnan)",
+    ],
+    actores: [
+      "Hollywood action legends of the 1980s (Schwarzenegger, Stallone, Willis, Norris, Van Damme)",
+      "Hollywood drama icons of the 1970s-1980s (De Niro, Pacino, Nicholson, Hoffman, Hackman)",
+      "Hollywood comedy legends of the 1980s-1990s (Eddie Murphy, Robin Williams, Bill Murray, Chevy Chase)",
+      "Hollywood blockbuster stars of the 1990s (Tom Cruise, Harrison Ford, Mel Gibson, Kevin Costner)",
+      "Hollywood legends of the 2000s (Tom Hanks, Denzel Washington, Will Smith, Russell Crowe)",
+    ],
+    futbolistas: [
+      "Brazilian football legends (Pelé, Ronaldo R9, Ronaldinho, Roberto Carlos, Zico, Romário era)",
+      "Argentine football legends (Maradona, Messi, Batistuta, Riquelme, Caniggia era)",
+      "Mexican football legends (Hugo Sánchez, Cuauhtémoc Blanco, Jorge Campos, Pavel Pardo era)",
+      "World football legends of the 1990s World Cup era (Zidane, Ronaldo R9, Bergkamp, Del Piero)",
+      "Latin American football legends mix 1980s-2000s",
+    ],
+    boxeadores: [
+      "American boxing legends of the 1970s (Muhammad Ali, Joe Frazier, George Foreman, Ken Norton)",
+      "Sugar Ray Leonard era — the legendary 1980s middleweights (Leonard, Duran, Hagler, Hearns)",
+      "Latin boxing legends (Julio César Chávez, Roberto Durán, Alexis Argüello, Salvador Sánchez)",
+      "Heavyweight legends of the 1990s (Tyson, Holyfield, Bowe, Lewis, Foreman comeback)",
+      "Oscar De La Hoya era — Golden Boy generation 1990s-2000s",
+    ],
   };
 
-  const tiers = ["mega-icons", "cult legends", "underrated icons", "fan favorites", "global legends"];
-  const angles = ["emotional loss", "betrayal of expectations", "nostalgia as pain", "childhood heroes vanishing", "the price of fame"];
+  const tiers = [
+    "the absolute legends everyone knows",
+    "cult heroes and fan favorites",
+    "the underrated icons who deserved more",
+    "the ones who defined a generation",
+    "the dream team that ruled their era",
+  ];
+
+  const angles = [
+    "emotional loss and nostalgia",
+    "betrayal of expectations — they were supposed to be here forever",
+    "childhood heroes who are gone or unrecognizable",
+    "the price of fame and what it cost them",
+    "the golden era that will never come back",
+  ];
 
   const eraList = eras[cat] || ["1980s-1990s", "1990s-2000s", "2000s-2010s"];
   const randomEra = eraList[Math.floor(Math.random() * eraList.length)];
